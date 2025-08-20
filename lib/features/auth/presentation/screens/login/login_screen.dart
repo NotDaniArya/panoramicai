@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:panoramicai/navigation_menu.dart';
 
 import '../../../../../utils/constant/colors.dart';
 import '../../../../../utils/constant/sizes.dart';
@@ -138,7 +139,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: TSizes.spaceBtwItems),
                 SizedBox(
                   width: 250,
-                  child: MyButton(text: 'Login', onPressed: () {}),
+                  child: MyButton(
+                    text: 'Login',
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const NavigationMenu(),
+                        ),
+                        (route) => false,
+                      );
+                    },
+                  ),
                 ),
               ],
             ),

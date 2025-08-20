@@ -1,14 +1,19 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../utils/constant/colors.dart';
-import '../../../../../utils/constant/images.dart';
-import '../../../../../utils/constant/sizes.dart';
+import '../constant/colors.dart';
+import '../constant/sizes.dart';
 
 class InformationSlider extends ConsumerStatefulWidget {
-  const InformationSlider({super.key});
+  const InformationSlider({
+    super.key,
+    required this.imageList,
+    required this.isHaveInformation,
+  });
+
+  final List<String> imageList;
+  final bool isHaveInformation;
 
   @override
   ConsumerState<InformationSlider> createState() => _InformationSlider();
@@ -17,7 +22,13 @@ class InformationSlider extends ConsumerStatefulWidget {
 class _InformationSlider extends ConsumerState<InformationSlider> {
   int _currentIndex = 0;
   final _controller = CarouselSliderController();
-  final _informationHomeScreenImage = MyImages.informationHomeScreen;
+  late List<String> _informationHomeScreenImage;
+
+  @override
+  void initState() {
+    super.initState();
+    _informationHomeScreenImage = widget.imageList;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,28 +46,16 @@ class _InformationSlider extends ConsumerState<InformationSlider> {
               CarouselSlider(
                 items: _informationHomeScreenImage
                     .map(
-                      (beritaItem) => ClipRRect(
-                        borderRadius: BorderRadiusGeometry.circular(8),
-                        child: CachedNetworkImage(
-                          // height: 200,
-                          imageUrl: beritaItem,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          progressIndicatorBuilder:
-                              (context, url, downloadProgress) => Center(
-                                child: CircularProgressIndicator(
-                                  value: downloadProgress.progress,
-                                ),
-                              ),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
-                        ),
+                      (item) => ClipRRect(
+                        borderRadius: BorderRadiusGeometry.circular(12),
+                        child: Image.asset(item, width: 350, fit: BoxFit.cover),
                       ),
                     )
                     .toList(),
                 carouselController: _controller,
                 options: CarouselOptions(
                   viewportFraction: 1.0,
+                  autoPlay: true,
                   aspectRatio: 16 / 9,
                   autoPlayInterval: const Duration(seconds: 5),
                   onPageChanged: (index, reason) {
@@ -67,43 +66,44 @@ class _InformationSlider extends ConsumerState<InformationSlider> {
                 ),
               ),
 
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  padding: const EdgeInsetsGeometry.symmetric(
-                    vertical: 6,
-                    horizontal: 12,
-                  ),
-                  decoration: const BoxDecoration(
-                    color: Colors.black45,
-                    borderRadius: BorderRadiusGeometry.only(
-                      bottomRight: Radius.circular(8),
-                      bottomLeft: Radius.circular(8),
+              if (widget.isHaveInformation)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsetsGeometry.symmetric(
+                      vertical: 6,
+                      horizontal: 12,
+                    ),
+                    decoration: const BoxDecoration(
+                      color: Colors.black45,
+                      borderRadius: BorderRadiusGeometry.only(
+                        bottomRight: Radius.circular(8),
+                        bottomLeft: Radius.circular(8),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          'title',
+                          textAlign: TextAlign.center,
+                          style: textTheme.bodySmall!.copyWith(
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: TSizes.smallSpace / 2),
+                        Text(
+                          'author',
+                          textAlign: TextAlign.center,
+                          style: textTheme.bodySmall!.copyWith(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  child: Column(
-                    children: [
-                      Text(
-                        'title',
-                        textAlign: TextAlign.center,
-                        style: textTheme.bodySmall!.copyWith(
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: TSizes.smallSpace / 2),
-                      Text(
-                        'author',
-                        textAlign: TextAlign.center,
-                        style: textTheme.bodySmall!.copyWith(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
-              ),
             ],
           ),
         ),

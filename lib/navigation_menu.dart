@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:panoramicai/features/home/presentation/screens/home_screen.dart';
 import 'package:panoramicai/utils/constant/colors.dart';
 
 class NavigationMenu extends StatefulWidget {
@@ -14,7 +15,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
 
   static final List<Widget> _listMenu = [
     // const HomeScreen(),
-    Container(),
+    const HomeScreen(),
     Container(),
     Container(),
   ];
@@ -29,7 +30,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: TColors.backgroundColor,
-      extendBody: true, // Membuat body bisa berada di belakang navbar
+      // extendBody: true, // Membuat body bisa berada di belakang navbar
       body: _listMenu[_selectedIndex],
 
       // 3. Gunakan BottomAppBar, bukan BottomNavigationBar
@@ -61,25 +62,20 @@ class _NavigationMenuState extends State<NavigationMenu> {
               // Item Navigasi di Kiri
               _buildNavItem(
                 icon: FontAwesomeIcons.home,
-                label: 'Home',
+                label: 'Dashboard ',
                 index: 0,
               ),
               _buildNavItem(
-                icon: FontAwesomeIcons.bookMedical,
-                label: 'Edukasi',
+                icon: FontAwesomeIcons.stethoscope,
+                label: 'Deteksi',
                 index: 1,
               ),
 
               // Item Navigasi di Kanan
               _buildNavItem(
-                icon: FontAwesomeIcons.peopleGroup,
-                label: 'Komunitas',
+                icon: FontAwesomeIcons.clockRotateLeft,
+                label: 'Rekam Medis',
                 index: 2,
-              ),
-              _buildNavItem(
-                icon: FontAwesomeIcons.solidUser,
-                label: 'Profile',
-                index: 3,
               ),
             ],
           ),
@@ -95,27 +91,24 @@ class _NavigationMenuState extends State<NavigationMenu> {
     required int index,
   }) {
     final isSelected = _selectedIndex == index;
-    final color = isSelected ? TColors.primaryColor : Colors.grey;
+    final color = isSelected ? Colors.black : Colors.grey;
+    final textTheme = Theme.of(context).textTheme;
 
     return InkWell(
       onTap: () => _onSelectedMenu(index),
       borderRadius: BorderRadius.circular(20),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: color, size: 20),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: color,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 20),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: textTheme.labelSmall!.copyWith(
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
