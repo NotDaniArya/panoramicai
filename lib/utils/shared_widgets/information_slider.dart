@@ -10,10 +10,12 @@ class InformationSlider extends ConsumerStatefulWidget {
     super.key,
     required this.imageList,
     required this.isHaveInformation,
+    this.ontap,
   });
 
   final List<String> imageList;
   final bool isHaveInformation;
+  final Widget? ontap;
 
   @override
   ConsumerState<InformationSlider> createState() => _InformationSlider();
@@ -38,7 +40,14 @@ class _InformationSlider extends ConsumerState<InformationSlider> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         InkWell(
-          onTap: () {},
+          onTap: () {
+            widget.ontap == null
+                ? null
+                : Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => widget.ontap!),
+                  );
+          },
           child: Stack(
             alignment: Alignment.bottomCenter,
             children: [
@@ -72,10 +81,7 @@ class _InformationSlider extends ConsumerState<InformationSlider> {
                   left: 0,
                   right: 0,
                   child: Container(
-                    padding: const EdgeInsetsGeometry.symmetric(
-                      vertical: 6,
-                      horizontal: 12,
-                    ),
+                    padding: const EdgeInsetsGeometry.all(14),
                     decoration: const BoxDecoration(
                       color: Colors.black45,
                       borderRadius: BorderRadiusGeometry.only(
@@ -83,24 +89,13 @@ class _InformationSlider extends ConsumerState<InformationSlider> {
                         bottomLeft: Radius.circular(8),
                       ),
                     ),
-                    child: Column(
-                      children: [
-                        Text(
-                          'title',
-                          textAlign: TextAlign.center,
-                          style: textTheme.bodySmall!.copyWith(
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: TSizes.smallSpace / 2),
-                        Text(
-                          'author',
-                          textAlign: TextAlign.center,
-                          style: textTheme.bodySmall!.copyWith(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
+                    child: Text(
+                      'Karies Gigi',
+                      textAlign: TextAlign.center,
+                      style: textTheme.titleMedium!.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),

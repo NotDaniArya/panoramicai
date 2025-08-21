@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:panoramicai/features/home/presentation/screens/detail_jenis_kerusakan_screen.dart';
 import 'package:panoramicai/features/home/presentation/screens/widgets/chart_card_jenis_kerusakan.dart';
 import 'package:panoramicai/features/home/presentation/screens/widgets/chart_card_jumlah_deteksi.dart';
 import 'package:panoramicai/utils/constant/images.dart';
@@ -92,7 +93,8 @@ class HomeScreen extends StatelessWidget {
                     margin: const EdgeInsets.only(top: TSizes.scaffoldPadding),
                     child: const InformationSlider(
                       imageList: MyImages.homeImageBotList,
-                      isHaveInformation: false,
+                      isHaveInformation: true,
+                      ontap: DetailJenisKerusakanScreen(),
                     ),
                   ),
                   const SizedBox(height: TSizes.spaceBtwItems),
