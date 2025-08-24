@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:panoramicai/features/deteksi/presentations/screens/deteksi_screen.dart';
 import 'package:panoramicai/features/home/presentation/screens/home_screen.dart';
 import 'package:panoramicai/utils/constant/colors.dart';
 
@@ -16,7 +17,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
   static final List<Widget> _listMenu = [
     // const HomeScreen(),
     const HomeScreen(),
-    Container(),
+    const DeteksiScreen(),
     Container(),
   ];
 
