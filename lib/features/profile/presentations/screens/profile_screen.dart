@@ -98,7 +98,7 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(vertical: TSizes.scaffoldPadding),
+        padding: const EdgeInsets.all(TSizes.scaffoldPadding),
         child: SizedBox(
           width: double.infinity,
           child: OutlinedButton(
@@ -107,6 +107,9 @@ class ProfileScreen extends ConsumerWidget {
               foregroundColor: Colors.red,
               side: const BorderSide(color: Colors.red),
               padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusGeometry.circular(12),
+              ),
             ),
             child: const Text(
               'Logout',
