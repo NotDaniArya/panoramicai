@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:panoramicai/navigation_menu.dart';
 
 import '../../../../../utils/constant/colors.dart';
@@ -7,14 +6,14 @@ import '../../../../../utils/constant/sizes.dart';
 import '../../../../../utils/shared_widgets/button.dart';
 import '../../../../../utils/shared_widgets/input_text_field.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _form = GlobalKey<FormState>();
   String _enteredEmail = '';
   String _enteredPass = '';

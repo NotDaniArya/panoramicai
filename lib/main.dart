@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:panoramicai/features/onboarding/onboarding_screen.dart';
 import 'package:panoramicai/utils/constant/colors.dart';
+import 'package:panoramicai/utils/constant/texts.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 final theme = ThemeData().copyWith(
   colorScheme: ColorScheme.fromSeed(
@@ -16,16 +18,20 @@ final theme = ThemeData().copyWith(
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await initializeDateFormatting('id_ID', null);
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  runApp(const ProviderScope(child: MyApp()));
+
+  await Supabase.initialize(url: TTexts.projectUrl, anonKey: TTexts.anonKey);
+
+  runApp(const MyApp());
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return MaterialApp(
       title: 'PanoramicAi',
       debugShowCheckedModeBanner: false,

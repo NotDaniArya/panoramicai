@@ -1,21 +1,20 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../utils/constant/sizes.dart';
 import '../../../../utils/shared_widgets/button.dart';
 import '../../../../utils/shared_widgets/input_text_field.dart';
 import '../../../../utils/shared_widgets/profile_image_picker.dart';
 
-class EditProfileScreen extends ConsumerStatefulWidget {
+class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
 
   @override
-  ConsumerState<EditProfileScreen> createState() => _EditProfileScreen();
+  State<EditProfileScreen> createState() => _EditProfileScreen();
 }
 
-class _EditProfileScreen extends ConsumerState<EditProfileScreen> {
+class _EditProfileScreen extends State<EditProfileScreen> {
   final _form = GlobalKey<FormState>();
   late final TextEditingController _fullNameController;
   late final TextEditingController _phoneController;

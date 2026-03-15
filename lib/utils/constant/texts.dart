@@ -1,3 +1,6 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class TTexts {
-  static const baseUrl = 'http://192.168.1.8:8080';
+  static final projectUrl = dotenv.get('PROJECT_URL');
+  static final anonKey = dotenv.get('ANON_KEY');
 }
