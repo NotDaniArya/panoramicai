@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../utils/constant/colors.dart';
 import '../../../../utils/constant/sizes.dart';
@@ -7,11 +6,11 @@ import '../../../../utils/shared_widgets/avatar_image.dart';
 import '../../../../utils/shared_widgets/menu_item.dart';
 import 'edit_profile_screen.dart';
 
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   // method untuk tampilkan dialog konfirmasi logout
-  void _showLogoutConfirmationDialog(BuildContext context, WidgetRef ref) {
+  void _showLogoutConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext ctx) {
@@ -36,7 +35,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -102,7 +101,7 @@ class ProfileScreen extends ConsumerWidget {
         child: SizedBox(
           width: double.infinity,
           child: OutlinedButton(
-            onPressed: () => _showLogoutConfirmationDialog(context, ref),
+            onPressed: () => _showLogoutConfirmationDialog(context),
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.red,
               side: const BorderSide(color: Colors.red),

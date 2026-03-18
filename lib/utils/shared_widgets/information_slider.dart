@@ -1,11 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../constant/colors.dart';
 import '../constant/sizes.dart';
 
-class InformationSlider extends ConsumerStatefulWidget {
+class InformationSlider extends StatefulWidget {
   const InformationSlider({
     super.key,
     required this.imageList,
@@ -18,10 +17,10 @@ class InformationSlider extends ConsumerStatefulWidget {
   final Widget? ontap;
 
   @override
-  ConsumerState<InformationSlider> createState() => _InformationSlider();
+  State<InformationSlider> createState() => _InformationSlider();
 }
 
-class _InformationSlider extends ConsumerState<InformationSlider> {
+class _InformationSlider extends State<InformationSlider> {
   int _currentIndex = 0;
   final _controller = CarouselSliderController();
   late List<String> _informationHomeScreenImage;
