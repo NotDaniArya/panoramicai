@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:panoramicai/utils/constant/colors.dart';
 import 'package:get/get.dart';
-import 'package:panoramicai/features/deteksi/presentations/controllers/deteksi_controller.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:panoramicai/features/deteksi/core/deteksi_type.dart';
+import 'package:panoramicai/features/deteksi/presentations/controllers/deteksi_controller.dart';
 import 'package:panoramicai/features/deteksi/presentations/screens/deteksi_screen.dart';
+import 'package:panoramicai/utils/constant/colors.dart';
 
 class ButtonDeteksi extends StatelessWidget {
   const ButtonDeteksi({
@@ -39,12 +39,17 @@ class ButtonDeteksi extends StatelessWidget {
         const SizedBox(height: 16),
         InkWell(
           onTap: () async {
-            await controller.pickImage(
+            // 1. Pilih gambar terlebih dahulu
+            bool isPicked = await controller.pickImageOnly(
               isCamera ? ImageSource.camera : ImageSource.gallery,
-              type,
             );
-            if (controller.selectedImage.value != null) {
+
+            if (isPicked) {
+              // 2. Navigasi duluan ke halaman DeteksiScreen agar animasinya tidak terputus/lag
               Get.to(() => DeteksiScreen(type: type));
+
+              // 3. Eksekusi model secara asynchronous (ini akan mengaktifkan loading screen dengan mulus)
+              controller.runDetection(type);
             }
           },
           child: Container(
@@ -53,7 +58,9 @@ class ButtonDeteksi extends StatelessWidget {
             decoration: BoxDecoration(
               color: isPrimary ? TColors.primaryColor : Colors.transparent,
               borderRadius: BorderRadius.circular(24),
-              border: isPrimary ? null : Border.all(color: TColors.primaryColor, width: 3),
+              border: isPrimary
+                  ? null
+                  : Border.all(color: TColors.primaryColor, width: 3),
             ),
             child: Icon(
               icon,

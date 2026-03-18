@@ -5,7 +5,7 @@ class DetectionResult {
   final double score;
   final int classId;
   final String className;
-  final String? groupName; // For numbering: Permanent / Sulung
+  final String? groupName;
   final Color color;
 
   DetectionResult({
