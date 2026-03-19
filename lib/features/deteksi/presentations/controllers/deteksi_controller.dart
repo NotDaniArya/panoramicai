@@ -9,7 +9,7 @@ import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
 import 'package:panoramicai/features/deteksi/data/models/detection_result.dart';
 import 'package:panoramicai/features/deteksi/core/deteksi_type.dart';
-import 'package:panoramicai/utils/image_processing.dart';
+import 'package:panoramicai/utils/helper_functions/image_processing.dart';
 
 // ============================================================================
 // TOP-LEVEL PIPELINE ISOLATES (BERJALAN DI BACKGROUND THREAD)
@@ -376,6 +376,8 @@ class DeteksiController extends GetxController {
   }
 
   Future<void> runDetection(DeteksiType type) async {
+    imageWidth.value = 0;
+    imageHeight.value =0;
     if (selectedImage.value == null) return;
 
     isLoading.value = true;

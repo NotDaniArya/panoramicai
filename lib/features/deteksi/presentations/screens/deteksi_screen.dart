@@ -1,245 +1,575 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart' as time;
 import 'package:panoramicai/features/deteksi/core/deteksi_type.dart';
 import 'package:panoramicai/features/deteksi/data/models/detection_result.dart';
 import 'package:panoramicai/features/deteksi/presentations/controllers/deteksi_controller.dart';
 import 'package:panoramicai/utils/constant/colors.dart';
+import 'package:panoramicai/utils/constant/sizes.dart';
 
 class DeteksiScreen extends GetView<DeteksiController> {
   final DeteksiType type;
 
   const DeteksiScreen({super.key, required this.type});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          type == DeteksiType.numbering ? "Numbering Gigi" : "Karies Gigi",
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.white,
-        foregroundColor: TColors.primaryColor,
-        elevation: 0,
-      ),
-      backgroundColor: Colors.grey[100],
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(14.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Obx(() {
-                  if (controller.selectedImage.value == null) {
-                    return const Text("Tidak ada gambar yang dipilih");
-                  }
+  void _showFullScreenImage(BuildContext context, Size imageSize) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog.fullscreen(
+        backgroundColor: Colors.black,
+        child: Stack(
+          children: [
+            InteractiveViewer(
+              maxScale: 7.0,
+              minScale: 0.5,
+              child: Center(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final double screenAspectRatio =
+                        constraints.maxWidth / constraints.maxHeight;
+                    final double imageAspectRatio =
+                        imageSize.width / imageSize.height;
 
-                  // Menggunakan dimensi yang sudah disimpan dari controller.
-                  // Menghilangkan fungsi _getImageSize dan FutureBuilder yang memakan RAM
-                  if (controller.imageWidth.value == 0 ||
-                      controller.imageHeight.value == 0) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+                    double drawWidth, drawHeight;
+                    if (imageAspectRatio > screenAspectRatio) {
+                      drawWidth = constraints.maxWidth;
+                      drawHeight = drawWidth / imageAspectRatio;
+                    } else {
+                      drawHeight = constraints.maxHeight;
+                      drawWidth = drawHeight * imageAspectRatio;
+                    }
 
-                  return LayoutBuilder(
-                    builder: (context, constraints) {
-                      final Size imageSize = Size(
-                        controller.imageWidth.value,
-                        controller.imageHeight.value,
-                      );
-                      final double screenAspectRatio =
-                          constraints.maxWidth / constraints.maxHeight;
-                      final double imageAspectRatio =
-                          imageSize.width / imageSize.height;
-
-                      double drawWidth, drawHeight;
-                      if (imageAspectRatio > screenAspectRatio) {
-                        drawWidth = constraints.maxWidth;
-                        drawHeight = drawWidth / imageAspectRatio;
-                      } else {
-                        drawHeight = constraints.maxHeight;
-                        drawWidth = drawHeight * imageAspectRatio;
-                      }
-
-                      return InteractiveViewer(
-                        maxScale: 7.0,
-                        minScale: 0.5,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Image.file(
-                              controller.selectedImage.value!,
-                              width: drawWidth,
-                              height: drawHeight,
-                              fit: BoxFit.fill,
-                            ),
-                            if (controller.isLoading.value)
-                              Container(
-                                width: drawWidth,
-                                height: drawHeight,
-                                color: Colors.black26,
-                                child: const Center(
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            if (!controller.isLoading.value &&
-                                controller.detections.isNotEmpty)
-                              SizedBox(
-                                width: drawWidth,
-                                height: drawHeight,
-                                child: CustomPaint(
-                                  painter: DetectionPainter(
-                                    detections: controller.detections,
-                                    imageSize: imageSize,
-                                    type: type,
-                                  ),
-                                ),
-                              ),
-                          ],
+                    return Stack(
+                      children: [
+                        Image.file(
+                          controller.selectedImage.value!,
+                          width: drawWidth,
+                          height: drawHeight,
+                          fit: BoxFit.fill,
                         ),
-                      );
-                    },
-                  );
-                }),
-              ),
-              if (type == DeteksiType.caries &&
-                  controller.detections.value.isNotEmpty)
-                Container(
-                  color: TColors.primaryColor,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 6,
-                    horizontal: 12,
-                  ),
-                  child: const Text('Terindikasi Karies'),
+                        SizedBox(
+                          width: drawWidth,
+                          height: drawHeight,
+                          child: CustomPaint(
+                            painter: DetectionPainter(
+                              detections: controller.detections,
+                              imageSize: imageSize,
+                              type: type,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
-              Obx(() => _buildResultSummary()),
-              _buildActionButtons(context),
-            ],
-          ),
+              ),
+            ),
+            Positioned(
+              top: 40,
+              right: 20,
+              child: CircleAvatar(
+                backgroundColor: Colors.black54,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildResultSummary() {
-    if (controller.detections.isEmpty || controller.isLoading.value) {
-      return const SizedBox.shrink();
-    }
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final tanggalSekarang = time.DateFormat(
+      'dd MMMM yyyy',
+      'id_ID',
+    ).format(DateTime.now());
 
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          type == DeteksiType.numbering ? "Numbering Gigi" : "Karies Gigi",
+          style: textTheme.headlineSmall!.copyWith(
+            fontWeight: FontWeight.bold,
+            color: TColors.primaryColor,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        foregroundColor: TColors.primaryColor,
+        elevation: 0,
+      ),
+      backgroundColor: TColors.backgroundColor,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Obx(() {
+                  if (controller.selectedImage.value == null) {
+                    return const Text("Tidak ada gambar yang dipilih");
+                  }
+
+                  if (controller.imageWidth.value == 0 ||
+                      controller.imageHeight.value == 0) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  final Size imageSize = Size(
+                    controller.imageWidth.value.toDouble(),
+                    controller.imageHeight.value.toDouble(),
+                  );
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Stack(
+                        children: [
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final double imageAspectRatio =
+                                  imageSize.width / imageSize.height;
+                              double drawWidth = constraints.maxWidth;
+                              double drawHeight = drawWidth / imageAspectRatio;
+
+                              return Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.file(
+                                      controller.selectedImage.value!,
+                                      width: drawWidth,
+                                      height: drawHeight,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                  if (!controller.isLoading.value &&
+                                      controller.detections.isNotEmpty)
+                                    SizedBox(
+                                      width: drawWidth,
+                                      height: drawHeight,
+                                      child: CustomPaint(
+                                        painter: DetectionPainter(
+                                          detections: controller.detections,
+                                          imageSize: imageSize,
+                                          type: type,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              );
+                            },
+                          ),
+                          Positioned(
+                            bottom: 12,
+                            right: 12,
+                            child: GestureDetector(
+                              onTap: () =>
+                                  _showFullScreenImage(context, imageSize),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.7),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      "Lihat Gambar",
+                                      style: textTheme.labelMedium,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    const Icon(Icons.open_in_full, size: 14),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: TSizes.mediumSpace),
+                      Text(
+                        tanggalSekarang,
+                        style: textTheme.bodySmall!.copyWith(
+                          color: Colors.blueGrey,
+                        ),
+                      ),
+                      if (type == DeteksiType.caries &&
+                          controller.detections.isNotEmpty &&
+                          !controller.isLoading.value) ...[
+                        const SizedBox(height: TSizes.spaceBtwItems),
+                        Container(
+                          width: 200,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            color: TColors.primaryColor,
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              BoxShadow(
+                                color: TColors.primaryColor.withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Terindikasi Karies',
+                              style: textTheme.titleMedium!.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: TSizes.spaceBtwSections),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Detail Deskripsi',
+                            style: textTheme.titleMedium!.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const CariesDescriptionTable(),
+                        const SizedBox(height: TSizes.spaceBtwSections),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Rencana Perawatan',
+                            style: textTheme.titleMedium!.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: TSizes.spaceBtwItems),
+                        const TreatmentPlanList(),
+                        const SizedBox(height: TSizes.spaceBtwSections),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Referensi Klinis',
+                            style: textTheme.titleMedium!.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: TSizes.spaceBtwItems),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                                offset: const Offset(2, 5),
+                              ),
+                            ],
+                          ),
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.location_pin),
+                                  const SizedBox(width: TSizes.smallSpace),
+                                  Expanded(
+                                    child: Text(
+                                      'Rumah Sakit Universitas Hasanuddin',
+                                      style: textTheme.titleMedium!.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: TSizes.smallSpace),
+                              Text(
+                                'Jl. Perintis Kemerdekaan No.Km. 10, Tamalanrea, Kec. Tamalanrea, Kota Makassar, Sulawesi Selatan 90245',
+                                style: textTheme.bodyMedium,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ] else if (type == DeteksiType.caries &&
+                          controller.detections.isEmpty &&
+                          !controller.isLoading.value) ...[
+                        const SizedBox(height: TSizes.spaceBtwItems),
+                        Container(
+                          width: 240,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            color: TColors.primaryColor,
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              BoxShadow(
+                                color: TColors.primaryColor.withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Tidak Terindikasi Karies',
+                              style: textTheme.titleMedium!.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  );
+                }),
+              ],
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(bottom: TSizes.spaceBtwSections),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 150,
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: TColors.primaryColor),
+                ),
+                onPressed: () {},
+                child: Text(
+                  'Batal',
+                  style: textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: TColors.primaryColor,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: TSizes.spaceBtwSections,),
+            SizedBox(
+              width: 150,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: TColors.primaryColor
+                ),
+                onPressed: () {},
+                child: Text(
+                  'Simpan',
+                  style: textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CariesDescriptionTable extends StatelessWidget {
+  const CariesDescriptionTable({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.black.withOpacity(0.5), width: 0.5),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Table(
+          border: TableBorder(
+            verticalInside: BorderSide(
+              color: Colors.black.withOpacity(0.5),
+              width: 0.5,
+            ),
+            horizontalInside: BorderSide(
+              color: Colors.black.withOpacity(0.5),
+              width: 0.5,
+            ),
+          ),
+          columnWidths: const {
+            0: FlexColumnWidth(1),
+            1: FlexColumnWidth(1),
+            2: FlexColumnWidth(1),
+          },
+          children: [
+            TableRow(
+              children: [
+                _buildCell(
+                  'RA\nInitial Stage',
+                  isHeader: true,
+                  textTheme: textTheme,
+                ),
+                _buildCell(
+                  'RB\nModerate Stage',
+                  isHeader: true,
+                  textTheme: textTheme,
+                ),
+                _buildCell(
+                  'RC\nExtensive Stage',
+                  isHeader: true,
+                  textTheme: textTheme,
+                ),
+              ],
+            ),
+            TableRow(
+              children: [
+                _buildCell(
+                  'Radiolucency in the enamel ± EDJ (enamel–dentin junction)',
+                  textTheme: textTheme,
+                ),
+                _buildCell(
+                  'Radiolucency in the outer or middle 1/3 of dentin',
+                  textTheme: textTheme,
+                ),
+                _buildCell(
+                  'Radiolucency in the inner 1/3 of dentin or into the pulp',
+                  textTheme: textTheme,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCell(
+    String text, {
+    bool isHeader = false,
+    required TextTheme textTheme,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        text,
+        textAlign: TextAlign.left,
+        style: textTheme.bodySmall!.copyWith(
+          fontSize: 10,
+          fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
+          color: Colors.black,
+        ),
+      ),
+    );
+  }
+}
+
+class TreatmentPlanList extends StatelessWidget {
+  const TreatmentPlanList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        _TreatmentPlanItem(
+          title: '1. RA (Initial Stage)',
+          description:
+              'Lesi terbatas pada enamel hingga outer dentin dan biasanya non-cavitated.',
+          treatment:
+              'Perawatan difokuskan pada tindakan preventif dan remineralisasi, seperti aplikasi fluoride, fissure sealant, peningkatan kebersihan mulut, serta edukasi diet rendah gula.',
+          color: Colors.green,
+        ),
+        _TreatmentPlanItem(
+          title: '2. RB (Moderate Stage)',
+          description:
+              'Lesi mencapai middle dentin dan dapat cavitated atau non-cavitated.',
+          treatment:
+              'Perawatan dapat berupa non-operatif (sealant, resin infiltration, kontrol plak dan fluoride) jika belum berkavitas, atau restorasi minimal invasif jika telah terjadi kavitas.',
+          color: Colors.orange,
+        ),
+        _TreatmentPlanItem(
+          title: '3. RC (Extensive Stage)',
+          description:
+              'Lesi mencapai inner dentin hingga mendekati pulpa dan umumnya sudah cavitated.',
+          treatment:
+              'Perawatan meliputi restorasi definitif, dan bila pulpa terlibat dapat dilakukan terapi pulpa seperti pulpotomi atau perawatan saluran akar sesuai kondisi klinis.',
+          color: Colors.red,
+        ),
+      ],
+    );
+  }
+}
+
+class _TreatmentPlanItem extends StatelessWidget {
+  final String title;
+  final String description;
+  final String treatment;
+  final Color color;
+
+  const _TreatmentPlanItem({
+    required this.title,
+    required this.description,
+    required this.treatment,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.5)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Hasil Deteksi (${controller.detections.length})",
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            title,
+            style: textTheme.titleSmall!.copyWith(
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
           ),
           const SizedBox(height: 8),
-          SizedBox(
-            height: 35,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: controller.detections.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
-              itemBuilder: (context, index) {
-                final det = controller.detections[index];
-                return Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: det.color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: det.color, width: 0.5),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "${det.groupName != null ? '${det.groupName}: ' : ''}${det.className}",
-                      style: TextStyle(
-                        color: det.color,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+          Text(
+            description,
+            style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w600),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButtons(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-      child: Row(
-        children: [
-          Expanded(
-            child: OutlinedButton.icon(
-              onPressed: () async {
-                bool picked = await controller.pickImageOnly(
-                  ImageSource.gallery,
-                );
-                if (picked) controller.runDetection(type);
-              },
-              icon: const Icon(Icons.photo_library, size: 20),
-              label: const Text("Gallery"),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                side: const BorderSide(color: TColors.primaryColor),
-                foregroundColor: TColors.primaryColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: ElevatedButton.icon(
-              onPressed: () async {
-                bool picked = await controller.pickImageOnly(
-                  ImageSource.camera,
-                );
-                if (picked) controller.runDetection(type);
-              },
-              icon: const Icon(Icons.camera_alt, size: 20),
-              label: const Text("Camera"),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                backgroundColor: TColors.primaryColor,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-          ),
+          const SizedBox(height: 4),
+          Text(treatment, style: textTheme.bodySmall),
         ],
       ),
     );
   }
 }
 
-// CustomPainter tidak diubah secara logika, hanya dipertahankan optimisasinya
 class DetectionPainter extends CustomPainter {
   final List<DetectionResult> detections;
   final Size imageSize;
@@ -259,7 +589,7 @@ class DetectionPainter extends CustomPainter {
     for (var det in detections) {
       final paint = Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.0
+        ..strokeWidth = 2.0
         ..color = det.color;
 
       final rect = Rect.fromLTRB(
@@ -272,40 +602,12 @@ class DetectionPainter extends CustomPainter {
       canvas.drawRect(rect, paint);
 
       if (type == DeteksiType.numbering) {
-        if (det.groupName != null) {
-          final groupSpan = TextSpan(
-            text: det.groupName!.substring(0, 4),
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 6,
-            ),
-          );
-          final groupPainter = TextPainter(
-            text: groupSpan,
-            textDirection: TextDirection.ltr,
-          )..layout();
-
-          final groupBgRect = Rect.fromLTWH(
-            rect.left,
-            rect.top - groupPainter.height - 2,
-            groupPainter.width + 4,
-            groupPainter.height + 2,
-          );
-          canvas.drawRect(groupBgRect, Paint()..color = det.color);
-          groupPainter.paint(
-            canvas,
-            Offset(rect.left + 2, groupBgRect.top + 1),
-          );
-        }
-
         final numSpan = TextSpan(
           text: det.className,
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.9),
+          style: const TextStyle(
+            color: Colors.white,
             fontWeight: FontWeight.bold,
-            fontSize: 6,
-            shadows: const [Shadow(blurRadius: 2, color: Colors.black26)],
+            fontSize: 10,
           ),
         );
         final numPainter = TextPainter(
@@ -325,7 +627,7 @@ class DetectionPainter extends CustomPainter {
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
-            fontSize: 7,
+            fontSize: 10,
           ),
         );
         final textPainter = TextPainter(
@@ -335,14 +637,14 @@ class DetectionPainter extends CustomPainter {
 
         final labelBgRect = Rect.fromLTWH(
           rect.left,
-          rect.top - textPainter.height - 1,
-          textPainter.width + 3,
-          textPainter.height + 1,
+          rect.top - textPainter.height - 2,
+          textPainter.width + 4,
+          textPainter.height + 2,
         );
         canvas.drawRect(labelBgRect, Paint()..color = det.color);
         textPainter.paint(
           canvas,
-          Offset(rect.left + 1.5, rect.top - textPainter.height - 0.5),
+          Offset(rect.left + 2, rect.top - textPainter.height - 1),
         );
       }
     }

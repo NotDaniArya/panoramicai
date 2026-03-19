@@ -11,7 +11,6 @@ class PilihDeteksiScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ensure controller is initialized
     final controller = Get.put(DeteksiController());
 
     return Scaffold(
@@ -29,8 +28,8 @@ class PilihDeteksiScreen extends StatelessWidget {
                         children: [
                           const SizedBox(height: 40),
                           Text(
-                            "Pilih Layanan\nDeteksi Gigi",
-                            style: Theme.of(context).textTheme.headlineMedium
+                            "Pilih Jenis\nDeteksi Gigi",
+                            style: Theme.of(context).textTheme.headlineLarge
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: TColors.primaryColor,
@@ -38,7 +37,7 @@ class PilihDeteksiScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            "Pilih salah satu layanan di bawah ini untuk memulai proses analisis rontgen gigi Anda.",
+                            "Pilih salah satu jenis deteksi di bawah ini untuk memulai proses analisis rontgen gigi Anda.",
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           const Spacer(),

@@ -9,6 +9,7 @@ class BackgroundImage extends StatelessWidget {
       height: MediaQuery.of(context).size.height,
       decoration: const BoxDecoration(
         image: DecorationImage(
+          opacity: 0.8,
           image: AssetImage('assets/images/image_bg.png'),
           fit: BoxFit.cover,
         ),
