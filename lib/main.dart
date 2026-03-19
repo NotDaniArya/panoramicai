@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:panoramicai/features/onboarding/onboarding_screen.dart';
@@ -22,6 +23,7 @@ Future<void> main() async {
   await initializeDateFormatting('id_ID', null);
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
+  // Firebase initialization would go here when ready
   await Supabase.initialize(url: TTexts.projectUrl, anonKey: TTexts.anonKey);
 
   runApp(const MyApp());
@@ -32,7 +34,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'PanoramicAi',
       debugShowCheckedModeBanner: false,
       theme: theme,

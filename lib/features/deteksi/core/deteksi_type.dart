@@ -1,0 +1,4 @@
+enum DeteksiType {
+  numbering,
+  caries,
+}

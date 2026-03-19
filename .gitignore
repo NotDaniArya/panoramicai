@@ -44,3 +44,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# models ML
+assets/models/model_caries_segmentation.tflite
+assets/models/model_numbering_detection.tflite

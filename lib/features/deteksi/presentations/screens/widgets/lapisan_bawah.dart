@@ -1,22 +1,23 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:panoramicai/features/deteksi/presentations/screens/widgets/button_deteksi.dart';
+import 'package:panoramicai/features/deteksi/core/deteksi_type.dart';
 
 class LapisanBawah extends StatelessWidget {
-  const LapisanBawah({super.key});
+  final DeteksiType type;
+  const LapisanBawah({super.key, required this.type});
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: const BorderRadiusGeometry.only(
+      borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(30),
         topRight: Radius.circular(30),
       ),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
-          padding: const EdgeInsetsGeometry.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 24,
             vertical: 32,
           ),
@@ -27,19 +28,21 @@ class LapisanBawah extends StatelessWidget {
               topRight: Radius.circular(50),
             ),
           ),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ButtonDeteksi(
                 label: 'Camera',
                 icon: Icons.camera_alt,
                 isPrimary: true,
+                type: type,
               ),
               ButtonDeteksi(
                 label: 'Gallery',
-                icon: Icons.add,
+                icon: Icons.photo_library,
                 isPrimary: false,
                 isCamera: false,
+                type: type,
               ),
             ],
           ),
