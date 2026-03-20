@@ -1,20 +1,15 @@
 import 'dart:io';
-import 'dart:typed_data';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
-import 'package:panoramicai/features/deteksi/data/models/detection_result.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:panoramicai/features/deteksi/core/deteksi_type.dart';
+import 'package:panoramicai/features/deteksi/data/models/detection_result.dart';
 import 'package:panoramicai/utils/helper_functions/image_processing.dart';
-
-// ============================================================================
-// TOP-LEVEL PIPELINE ISOLATES (BERJALAN DI BACKGROUND THREAD)
-// UI Thread (Main Thread) sama sekali tidak akan disentuh oleh komputasi berat
-// ============================================================================
+import 'package:tflite_flutter/tflite_flutter.dart';
 
 Future<Map<String, dynamic>> runNumberingPipeline(
   Map<String, dynamic> args,
@@ -22,14 +17,12 @@ Future<Map<String, dynamic>> runNumberingPipeline(
   Uint8List modelBytes = args['modelBytes'];
   Uint8List imageBytes = args['imageBytes'];
 
-  // 1. Decode Image
   final originalImage = img.decodeImage(imageBytes);
   if (originalImage == null) throw Exception("Gagal decode gambar");
 
   final int origW = originalImage.width;
   final int origH = originalImage.height;
 
-  // 2. Pre-processing
   final Map<String, dynamic> prepResult = processNumberingFullInIsolate({
     'image': originalImage,
   });
@@ -38,7 +31,6 @@ Future<Map<String, dynamic>> runNumberingPipeline(
   final int padLeft = prepResult['padLeft'];
   final int padTop = prepResult['padTop'];
 
-  // 3. Load Model & Inference (Native TFLite Run)
   final interpreter = Interpreter.fromBuffer(modelBytes);
   final inputShape = interpreter.getInputTensors()[0].shape;
   final outputShape = interpreter.getOutputTensors()[0].shape;
@@ -46,13 +38,10 @@ Future<Map<String, dynamic>> runNumberingPipeline(
     outputShape.reduce((a, b) => a * b),
   ).reshape(outputShape);
 
-  // Proses berat run() kini berjalan murni di background!
   interpreter.run(input.reshape(inputShape), output);
 
-  // Tutup interpreter segera setelah selesai untuk mencegah memory leak
   interpreter.close();
 
-  // 4. Post-processing (Parsing & NMS)
   List<List<double>> preds = List<List<double>>.from(
     (output[0] as List).map((e) => List<double>.from(e as List)),
   );
@@ -143,14 +132,12 @@ Future<Map<String, dynamic>> runCariesPipeline(
   Uint8List modelBytes = args['modelBytes'];
   Uint8List imageBytes = args['imageBytes'];
 
-  // 1. Decode Image
   final originalImage = img.decodeImage(imageBytes);
   if (originalImage == null) throw Exception("Gagal decode gambar");
 
   final int origW = originalImage.width;
   final int origH = originalImage.height;
 
-  // 2. Pre-processing
   final Map<String, dynamic> prepResult = processCariesFullInIsolate({
     'image': originalImage,
   });
@@ -163,7 +150,6 @@ Future<Map<String, dynamic>> runCariesPipeline(
   final int xMinOffset = prepResult['xMin'];
   final int yMinOffset = prepResult['yMin'];
 
-  // 3. Load Model & Loop Inference
   final interpreter = Interpreter.fromBuffer(modelBytes);
   List<DetectionResult> allDetections = [];
 
@@ -176,7 +162,6 @@ Future<Map<String, dynamic>> runCariesPipeline(
       outputShape.reduce((a, b) => a * b),
     ).reshape(outputShape);
 
-    // Proses loop yang tadinya bikin hang UI krena jalan ratusan kali, sekarang aman di Background Thread
     interpreter.run(input.reshape([1, 640, 640, 3]), output);
 
     for (int j = 0; j < 300; j++) {
@@ -216,7 +201,6 @@ Future<Map<String, dynamic>> runCariesPipeline(
   };
 }
 
-// Helper Functions yang dipanggil oleh Isolate
 List<DetectionResult> applyNMS(List<DetectionResult> allDetections) {
   if (allDetections.isEmpty) return [];
   allDetections.sort((a, b) => b.score.compareTo(a.score));
@@ -322,10 +306,6 @@ Color getCariesColor(int id) {
   return map[id] ?? Colors.red;
 }
 
-// ============================================================================
-// MAIN CONTROLLER (UI THREAD)
-// ============================================================================
-
 class DeteksiController extends GetxController {
   final ImagePicker _picker = ImagePicker();
 
@@ -336,7 +316,6 @@ class DeteksiController extends GetxController {
   RxDouble imageWidth = 0.0.obs;
   RxDouble imageHeight = 0.0.obs;
 
-  // Load models sebagai ByteArray agar aman dipindahkan lintas-Isolate
   Uint8List? _numberingModelBytes;
   Uint8List? _cariesModelBytes;
 
@@ -377,13 +356,12 @@ class DeteksiController extends GetxController {
 
   Future<void> runDetection(DeteksiType type) async {
     imageWidth.value = 0;
-    imageHeight.value =0;
+    imageHeight.value = 0;
     if (selectedImage.value == null) return;
 
     isLoading.value = true;
     detections.clear();
 
-    // Biarkan UI me-render animasi loading sebelum isolate memakan resource
     await Future.delayed(const Duration(milliseconds: 150));
 
     try {
@@ -393,7 +371,6 @@ class DeteksiController extends GetxController {
         if (_numberingModelBytes == null)
           throw Exception("Model numbering belum dimuat");
 
-        // Pindah total semua komputasi ke Isolate
         final result = await compute(runNumberingPipeline, {
           'modelBytes': _numberingModelBytes!,
           'imageBytes': imageBytes,
@@ -406,7 +383,6 @@ class DeteksiController extends GetxController {
         if (_cariesModelBytes == null)
           throw Exception("Model caries belum dimuat");
 
-        // Pindah total semua komputasi ke Isolate
         final result = await compute(runCariesPipeline, {
           'modelBytes': _cariesModelBytes!,
           'imageBytes': imageBytes,
