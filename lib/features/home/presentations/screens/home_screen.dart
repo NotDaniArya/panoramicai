@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:panoramicai/features/home/presentation/screens/detail_jenis_kerusakan_screen.dart';
-import 'package:panoramicai/features/home/presentation/screens/widgets/chart_card_jenis_kerusakan.dart';
-import 'package:panoramicai/features/home/presentation/screens/widgets/chart_card_jumlah_deteksi.dart';
+import 'package:panoramicai/features/home/presentations/screens/widgets/chart_card_jenis_kerusakan.dart';
+import 'package:panoramicai/features/home/presentations/screens/widgets/chart_card_jumlah_deteksi.dart';
 import 'package:panoramicai/features/profile/presentations/screens/profile_screen.dart';
 import 'package:panoramicai/utils/constant/images.dart';
 import 'package:panoramicai/utils/constant/sizes.dart';
-import 'package:panoramicai/utils/shared_widgets/button.dart';
 import 'package:panoramicai/utils/shared_widgets/information_slider.dart';
+
+import 'detail_jenis_kerusakan_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -84,11 +84,6 @@ class HomeScreen extends StatelessWidget {
                       Expanded(child: ChartCardJenisKerusakan()),
                       Expanded(child: ChartCardJumlahDeteksi()),
                     ],
-                  ),
-                  const SizedBox(height: TSizes.spaceBtwItems),
-                  SizedBox(
-                    width: 250,
-                    child: MyButton(text: 'Mulai Analisis', onPressed: () {}),
                   ),
                   const SizedBox(height: TSizes.spaceBtwSections),
                   SizedBox(

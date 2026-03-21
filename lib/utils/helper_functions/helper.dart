@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:panoramicai/features/deteksi/presentations/controllers/deteksi_controller.dart';
+import 'package:panoramicai/utils/constant/texts.dart';
+import 'package:panoramicai/utils/constant/texts.dart';
+import 'package:panoramicai/utils/constant/texts.dart';
 import 'package:toastification/toastification.dart';
 
 import '../../features/deteksi/core/deteksi_type.dart';
@@ -12,30 +16,43 @@ class MyHelperFunction {
   //   }
   // }
 
-  static void showToast(
-    BuildContext context,
-    String message,
-    String description,
-    ToastificationType? type,
-  ) {
-    final textTheme = Theme.of(context).textTheme;
+  static warningToast(String message) {
+    Get.snackbar(TTexts.tag_warning, '😢 $message',
+        snackPosition: SnackPosition.BOTTOM,
+        colorText: Colors.white,
+        backgroundColor: Colors.teal,
+        icon: const Icon(
+          Icons.warning_amber,
+          color: Colors.white,
+        ),
+        duration: const Duration(seconds: 3),
+        forwardAnimationCurve: Curves.bounceInOut);
+  }
 
-    toastification.dismissAll();
-    toastification.show(
-      context: context,
-      type: type,
-      style: ToastificationStyle.flatColored,
-      title: Text(
-        message,
-        style: textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
-      ),
-      description: Text(description, style: textTheme.bodySmall),
-      alignment: Alignment.bottomRight,
-      autoCloseDuration: const Duration(seconds: 5),
-      icon: type == ToastificationType.success && type != null
-          ? const Icon(Icons.check_circle)
-          : const Icon(Icons.error),
-    );
+  static suksesToast(String message) {
+    Get.snackbar(TTexts.tag_sukses, '😊 $message',
+        snackPosition: SnackPosition.BOTTOM,
+        colorText: Colors.white,
+        backgroundColor: Colors.green,
+        icon: const Icon(
+          Icons.thumb_up_off_alt,
+          color: Colors.white,
+        ),
+        duration: const Duration(seconds: 3),
+        forwardAnimationCurve: Curves.bounceInOut);
+  }
+
+  static errorToast(String message) {
+    Get.snackbar(TTexts.tag_error, '🥹 $message',
+        snackPosition: SnackPosition.BOTTOM,
+        colorText: Colors.white,
+        backgroundColor: Colors.red,
+        icon: const Icon(
+          Icons.error_outline,
+          color: Colors.white,
+        ),
+        duration: const Duration(seconds: 4),
+        forwardAnimationCurve: Curves.bounceInOut);
   }
 
   static void showFullScreenImage(

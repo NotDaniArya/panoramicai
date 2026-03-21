@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:panoramicai/features/auth/presentation/screens/login/login_screen.dart';
-import 'package:panoramicai/features/auth/presentation/screens/register/register_screen.dart';
 import 'package:panoramicai/utils/constant/colors.dart';
+import 'package:get/get.dart';
 
 import '../../utils/constant/sizes.dart';
 import '../../utils/shared_widgets/button.dart';
+import '../auth/presentations/controllers/auth_controller.dart';
+import '../auth/presentations/screens/login/login_screen.dart';
+import '../auth/presentations/screens/register/register_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -12,6 +14,7 @@ class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final controller = Get.put(AuthController());
 
     return Scaffold(
       backgroundColor: const Color(0xFFE5FAFF),
@@ -79,7 +82,7 @@ class OnboardingScreen extends StatelessWidget {
                         borderRadius: BorderRadiusGeometry.circular(50),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () => controller.signInWithGoogle(),
                     icon: Image.asset('assets/icons/google.png', width: 30),
                     label: Text(
                       'Login with Google',
