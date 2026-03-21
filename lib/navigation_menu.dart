@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:panoramicai/features/deteksi/presentations/screens/pilih_deteksi_screen.dart';
 import 'package:panoramicai/utils/constant/colors.dart';
 
+import 'features/histori_deteksi/presentations/screens/history_deteksi_screen.dart';
 import 'features/home/presentations/screens/home_screen.dart';
 
 class NavigationMenu extends StatefulWidget {
@@ -19,7 +20,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
     // const HomeScreen(),
     const HomeScreen(),
     const PilihDeteksiScreen(),
-    Container(),
+    const HistoryDeteksiScreen(),
   ];
 
   void _onSelectedMenu(int index) {

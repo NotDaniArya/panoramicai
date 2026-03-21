@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../utils/helper_functions/helper.dart';
@@ -12,12 +13,14 @@ class DetectionOutputImage extends StatelessWidget {
     required this.controller,
     required this.type,
     required this.textTheme,
+    this.historyImageUrl,
   });
 
   final Size imageSize;
   final DeteksiController controller;
   final DeteksiType type;
   final TextTheme textTheme;
+  final String? historyImageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -33,14 +36,20 @@ class DetectionOutputImage extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.file(
-                    controller.selectedImage.value!,
-                    width: drawWidth,
-                    height: drawHeight,
-                    fit: BoxFit.fill,
-                  ),
+                  child: historyImageUrl != null
+                      ? CachedNetworkImage(
+                          imageUrl: historyImageUrl!,
+                          fit: BoxFit.fill,
+                        )
+                      : Image.file(
+                          controller.selectedImage.value!,
+                          width: drawWidth,
+                          height: drawHeight,
+                          fit: BoxFit.fill,
+                        ),
                 ),
-                if (!controller.isLoading.value &&
+                if (historyImageUrl == null &&
+                    !controller.isLoading.value &&
                     controller.detections.isNotEmpty)
                   SizedBox(
                     width: drawWidth,
@@ -66,6 +75,7 @@ class DetectionOutputImage extends StatelessWidget {
               imageSize,
               controller,
               type,
+              historyImageUrl: historyImageUrl,
             ),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

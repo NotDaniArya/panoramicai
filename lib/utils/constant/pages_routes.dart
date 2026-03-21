@@ -1,6 +1,6 @@
 class PagesRoutes {
-  static String RUTE_HOME = '/home';
-  static String RUTE_DETEKSI = '/deteksi';
-  static String RUTE_PROFILE = '/profile';
-  static String RUTE_RIWAYAT_DETEKSI = '/riwayat-deteksi';
+  static const String RUTE_HOME = '/home';
+  static const String RUTE_PROFILE = '/profile';
+  static const String RUTE_DETEKSI = '/deteksi';
+  static const String RUTE_HASIL_DETEKSI = '/hasil-deteksi';
 }

@@ -1,5 +1,8 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,12 +11,18 @@ import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:panoramicai/features/deteksi/core/deteksi_type.dart';
 import 'package:panoramicai/features/deteksi/data/models/detection_result.dart';
+import 'package:panoramicai/utils/constant/pages_routes.dart';
+import 'package:panoramicai/utils/helper_functions/helper.dart';
 import 'package:panoramicai/utils/helper_functions/image_processing.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:tflite_flutter/tflite_flutter.dart';
 
+// ============================================================================
+// ISOLATE FUNCTIONS (PIPELINES)
+// ============================================================================
+
 Future<Map<String, dynamic>> runNumberingPipeline(
-  Map<String, dynamic> args,
-) async {
+    Map<String, dynamic> args,) async {
   Uint8List modelBytes = args['modelBytes'];
   Uint8List imageBytes = args['imageBytes'];
 
@@ -49,7 +58,7 @@ Future<Map<String, dynamic>> runNumberingPipeline(
   if (preds.length == 8400) {
     var transposed = List.generate(
       preds[0].length,
-      (i) => List<double>.filled(preds.length, 0.0),
+          (i) => List<double>.filled(preds.length, 0.0),
     );
     for (int i = 0; i < preds.length; i++) {
       for (int j = 0; j < preds[0].length; j++) {
@@ -127,8 +136,7 @@ Future<Map<String, dynamic>> runNumberingPipeline(
 }
 
 Future<Map<String, dynamic>> runCariesPipeline(
-  Map<String, dynamic> args,
-) async {
+    Map<String, dynamic> args,) async {
   Uint8List modelBytes = args['modelBytes'];
   Uint8List imageBytes = args['imageBytes'];
 
@@ -221,10 +229,10 @@ List<DetectionResult> applyNMS(List<DetectionResult> allDetections) {
 double iou(Rect a, Rect b) {
   double intersectionWidth =
       (a.right < b.right ? a.right : b.right) -
-      (a.left > b.left ? a.left : b.left);
+          (a.left > b.left ? a.left : b.left);
   double intersectionHeight =
       (a.bottom < b.bottom ? a.bottom : b.bottom) -
-      (a.top > b.top ? a.top : b.top);
+          (a.top > b.top ? a.top : b.top);
   if (intersectionWidth <= 0 || intersectionHeight <= 0) return 0;
   double intersectionArea = intersectionWidth * intersectionHeight;
   double unionArea =
@@ -306,12 +314,18 @@ Color getCariesColor(int id) {
   return map[id] ?? Colors.red;
 }
 
+// ============================================================================
+// CONTROLLER
+// ============================================================================
+
 class DeteksiController extends GetxController {
   final ImagePicker _picker = ImagePicker();
 
   Rx<File?> selectedImage = Rx<File?>(null);
   RxList<DetectionResult> detections = <DetectionResult>[].obs;
+
   RxBool isLoading = false.obs;
+  RxBool isSaving = false.obs; // Tambahan state untuk menyimpan
 
   RxDouble imageWidth = 0.0.obs;
   RxDouble imageHeight = 0.0.obs;
@@ -396,6 +410,138 @@ class DeteksiController extends GetxController {
       debugPrint("Error during detection: $e");
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  // ============================================================================
+  // LOGIKA PENYIMPANAN KE SUPABASE & FIRESTORE
+  // ============================================================================
+
+  /// Fungsi untuk menggabungkan gambar rontgen asli dengan hasil deteksi
+  Future<Uint8List?> _generateMergedImage(DeteksiType type) async {
+    if (selectedImage.value == null) return null;
+
+    try {
+      final Uint8List imageBytes = await selectedImage.value!.readAsBytes();
+      final ui.Codec codec = await ui.instantiateImageCodec(imageBytes);
+      final ui.FrameInfo frameInfo = await codec.getNextFrame();
+      final ui.Image originalImage = frameInfo.image;
+
+      final ui.PictureRecorder recorder = ui.PictureRecorder();
+      final Canvas canvas = Canvas(recorder);
+
+      canvas.drawImage(originalImage, Offset.zero, Paint());
+
+      for (var det in detections) {
+        final paint = Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth =
+          4.0
+          ..color = det.color;
+
+        final rect = det.box;
+        canvas.drawRect(rect, paint);
+
+        // Siapkan Teks
+        String labelText = type == DeteksiType.numbering
+            ? det.className
+            : "${det.className} ${det.score.toStringAsFixed(2)}";
+
+        final textStyle = ui.TextStyle(
+          color: Colors.white,
+          fontSize: 32,
+          fontWeight: FontWeight.bold,
+        );
+
+        final paragraphBuilder =
+        ui.ParagraphBuilder(ui.ParagraphStyle(textAlign: TextAlign.left))
+          ..pushStyle(textStyle)
+          ..addText(labelText);
+
+        final paragraph = paragraphBuilder.build();
+        paragraph.layout(const ui.ParagraphConstraints(width: 800));
+
+        final textBgRect = Rect.fromLTWH(
+          rect.left,
+          rect.top - paragraph.height - 10,
+          paragraph.maxIntrinsicWidth + 20,
+          paragraph.height + 10,
+        );
+        canvas.drawRect(textBgRect, Paint()
+          ..color = det.color);
+
+        canvas.drawParagraph(
+          paragraph,
+          Offset(rect.left + 10, rect.top - paragraph.height - 5),
+        );
+      }
+
+      final ui.Picture picture = recorder.endRecording();
+      final ui.Image mergedImage = await picture.toImage(
+        originalImage.width,
+        originalImage.height,
+      );
+
+      final ByteData? byteData = await mergedImage.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
+
+      return byteData?.buffer.asUint8List();
+    } catch (e) {
+      debugPrint("Error generating merged image: $e");
+      return null;
+    }
+  }
+
+  Future<void> simpanDeteksi(DeteksiType type) async {
+    if (detections.isEmpty || selectedImage.value == null) return;
+
+    try {
+      isSaving.value = true;
+
+      final Uint8List? mergedBytes = await _generateMergedImage(type);
+      if (mergedBytes == null) throw Exception("Gagal memproses gambar final");
+
+      final String fileName =
+          'deteksi_${DateTime
+          .now()
+          .millisecondsSinceEpoch}.png';
+
+      await Supabase.instance.client.storage
+          .from('panoramic-bucket')
+          .uploadBinary(
+        fileName,
+        mergedBytes,
+        fileOptions: const FileOptions(contentType: 'image/png'),
+      );
+
+      final String publicUrl = Supabase.instance.client.storage
+          .from('panoramic-bucket')
+          .getPublicUrl(fileName);
+
+      final User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        throw Exception("Sesi login tidak ditemukan, mohon login ulang");
+      }
+
+      // 5. Simpan data ke Firestore
+      await FirebaseFirestore.instance.collection('histori_deteksi').add({
+        'userId': currentUser.uid,
+        'imageUrl': publicUrl,
+        'type': type == DeteksiType.numbering ? 'Numbering' : 'Karies',
+        'resultCount': detections.length,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      MyHelperFunction.suksesToast('Data deteksi berhasil disimpan!');
+
+      Get.offAllNamed(PagesRoutes.RUTE_HOME);
+    } catch (e) {
+      debugPrint("Error saving detection: $e");
+
+      MyHelperFunction.errorToast('Terjadi kesalahan saat menyimpan data: $e');
+    } finally {
+      isSaving.value = false;
     }
   }
 }

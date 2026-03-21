@@ -6,15 +6,17 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:panoramicai/features/deteksi/bindings/deteksi_binding.dart';
+import 'package:panoramicai/features/deteksi/core/deteksi_type.dart';
+import 'package:panoramicai/features/deteksi/presentations/screens/deteksi_screen.dart';
 import 'package:panoramicai/features/deteksi/presentations/screens/pilih_deteksi_screen.dart';
 import 'package:panoramicai/features/onboarding/onboarding_screen.dart';
 import 'package:panoramicai/features/profile/presentations/screens/profile_screen.dart';
+import 'package:panoramicai/navigation_menu.dart';
 import 'package:panoramicai/utils/constant/colors.dart';
 import 'package:panoramicai/utils/constant/pages_routes.dart';
 import 'package:panoramicai/utils/constant/texts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'features/home/presentations/screens/home_screen.dart';
 import 'firebase_options.dart';
 
 final theme = ThemeData().copyWith(
@@ -49,15 +51,16 @@ class MyApp extends StatelessWidget {
       theme: theme,
       home: const OnboardingScreen(),
       getPages: [
-        GetPage(name: PagesRoutes.RUTE_HOME, page: () => const HomeScreen()),
+        GetPage(name: PagesRoutes.RUTE_HOME, page: () => const NavigationMenu()),
+        GetPage(name: PagesRoutes.RUTE_PROFILE, page: () => const ProfileScreen()),
         GetPage(
-          name: PagesRoutes.RUTE_DETEKSI,
-          page: () => const PilihDeteksiScreen(),
+          name: PagesRoutes.RUTE_HASIL_DETEKSI,
+          page: () {
+            final args = Get.arguments as Map<String, dynamic>?;
+            final type = args?['type'] ?? DeteksiType.caries;
+            return DeteksiScreen(type: type);
+          },
           binding: DeteksiBinding(),
-        ),
-        GetPage(
-          name: PagesRoutes.RUTE_PROFILE,
-          page: () => const ProfileScreen(),
         ),
       ],
     );

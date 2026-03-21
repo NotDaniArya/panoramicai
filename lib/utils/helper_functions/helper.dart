@@ -1,21 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:panoramicai/features/deteksi/presentations/controllers/deteksi_controller.dart';
 import 'package:panoramicai/utils/constant/texts.dart';
-import 'package:panoramicai/utils/constant/texts.dart';
-import 'package:panoramicai/utils/constant/texts.dart';
-import 'package:toastification/toastification.dart';
 
 import '../../features/deteksi/core/deteksi_type.dart';
 import '../../features/deteksi/presentations/screens/widgets/detection_painter.dart';
 
 class MyHelperFunction {
-  // static Future<void> visitLink(Uri url) async {
-  //   if (!await launchUrl(url)) {
-  //     throw Exception('Tidak bisa membuka $url');
-  //   }
-  // }
-
   static warningToast(String message) {
     Get.snackbar(TTexts.tag_warning, '😢 $message',
         snackPosition: SnackPosition.BOTTOM,
@@ -59,8 +51,9 @@ class MyHelperFunction {
     BuildContext context,
     Size imageSize,
     DeteksiController controller,
-    DeteksiType type,
-  ) {
+    DeteksiType type, {
+    String? historyImageUrl,
+  }) {
     showDialog(
       context: context,
       builder: (context) => Dialog.fullscreen(
@@ -89,23 +82,33 @@ class MyHelperFunction {
 
                     return Stack(
                       children: [
-                        Image.file(
-                          controller.selectedImage.value!,
-                          width: drawWidth,
-                          height: drawHeight,
-                          fit: BoxFit.fill,
-                        ),
-                        SizedBox(
-                          width: drawWidth,
-                          height: drawHeight,
-                          child: CustomPaint(
-                            painter: DetectionPainter(
-                              detections: controller.detections,
-                              imageSize: imageSize,
-                              type: type,
+                        historyImageUrl != null
+                            ? CachedNetworkImage(
+                                imageUrl: historyImageUrl,
+                                fit: BoxFit.fill,
+                                placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator()),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error, color: Colors.white),
+                              )
+                            : Image.file(
+                                controller.selectedImage.value!,
+                                width: drawWidth,
+                                height: drawHeight,
+                                fit: BoxFit.fill,
+                              ),
+                        if (historyImageUrl == null)
+                          SizedBox(
+                            width: drawWidth,
+                            height: drawHeight,
+                            child: CustomPaint(
+                              painter: DetectionPainter(
+                                detections: controller.detections,
+                                imageSize: imageSize,
+                                type: type,
+                              ),
                             ),
                           ),
-                        ),
                       ],
                     );
                   },
