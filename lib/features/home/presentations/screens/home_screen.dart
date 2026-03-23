@@ -6,8 +6,6 @@ import 'package:panoramicai/utils/constant/images.dart';
 import 'package:panoramicai/utils/constant/sizes.dart';
 import 'package:panoramicai/utils/shared_widgets/information_slider.dart';
 
-import 'detail_jenis_kerusakan_screen.dart';
-
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -82,6 +80,7 @@ class HomeScreen extends StatelessWidget {
                   const Row(
                     children: [
                       Expanded(child: ChartCardJenisKerusakan()),
+                      SizedBox(width: 8),
                       Expanded(child: ChartCardJumlahDeteksi()),
                     ],
                   ),
@@ -100,7 +99,6 @@ class HomeScreen extends StatelessWidget {
                     child: const InformationSlider(
                       imageList: MyImages.homeImageBotList,
                       isHaveInformation: true,
-                      ontap: DetailJenisKerusakanScreen(),
                     ),
                   ),
                   const SizedBox(height: TSizes.spaceBtwItems),

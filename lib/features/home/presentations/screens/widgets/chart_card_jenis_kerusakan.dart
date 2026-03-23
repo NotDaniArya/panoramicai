@@ -1,114 +1,173 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:panoramicai/utils/constant/colors.dart';
 
-class ChartCardJenisKerusakan extends StatefulWidget {
+class ChartCardJenisKerusakan extends StatelessWidget {
   const ChartCardJenisKerusakan({super.key});
 
   @override
-  State<ChartCardJenisKerusakan> createState() => _ChartCardJenisKerusakan();
-}
-
-class _ChartCardJenisKerusakan extends State<ChartCardJenisKerusakan> {
-  @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 300,
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        color: const Color(0xFFE3F2FD), // Warna latar belakang kartu
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SizedBox(
-                height: 150,
-                width: 150,
-                // 1. Gunakan Stack untuk menumpuk Teks di tengah Bagan
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Teks di tengah
-                    const Text(
-                      '30',
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
+    final userId = FirebaseAuth.instance.currentUser?.uid;
 
-                    // 2. Bagan Pie dari fl_chart
-                    PieChart(
-                      PieChartData(
-                        // Mengatur agar lubang di tengah ada (ini yang membuatnya jadi donat)
-                        centerSpaceRadius: 50,
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('histori_deteksi')
+          .where('userId', isEqualTo: userId)
+          .snapshots(),
+      builder: (context, snapshot) {
+        int kariesCount = 0;
+        int numberingCount = 0;
 
-                        // Menghilangkan label di setiap bagian
-                        sectionsSpace: 0, // Jarak antar bagian
-                        // Data untuk setiap bagian berwarna
-                        sections: [
-                          PieChartSectionData(
-                            color: Colors.purple.shade300,
-                            value: 10, // Nilai untuk Karies
-                            title: '',
-                            radius: 20,
+        if (snapshot.hasData) {
+          for (var doc in snapshot.data!.docs) {
+            final data = doc.data() as Map<String, dynamic>;
+            final type = data['type'] as String?;
+            if (type == 'Karies') {
+              kariesCount++;
+            } else if (type == 'Numbering') {
+              numberingCount++;
+            }
+          }
+        }
+
+        final totalCount = kariesCount + numberingCount;
+
+        return SizedBox(
+          height: 240, // Tinggi disamakan dengan kartu sebelahnya
+          child: Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            // Sedikit dikurangi agar lebih proporsional
+            color: const Color(0xFFE3F2FD),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0), // Padding dikurangi sedikit
+              child: Column(
+                // UBAH KE COLUMN
+                children: [
+                  const Text(
+                    'Jenis Deteksi Anda',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Chart Section (di atas)
+                  Expanded(
+                    flex: 3,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '$totalCount',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: TColors.primaryColor,
+                              ),
+                            ),
+                            const Text(
+                              'Total',
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                        PieChart(
+                          PieChartData(
+                            centerSpaceRadius: 35, // Diperkecil lagi agar fit
+                            sectionsSpace: 2,
+                            startDegreeOffset: 270,
+                            sections: [
+                              PieChartSectionData(
+                                color: const Color(0xFFFF1493),
+                                value: kariesCount == 0 && numberingCount == 0
+                                    ? 1
+                                    : kariesCount.toDouble(),
+                                radius: 12,
+                                showTitle: false,
+                              ),
+                              PieChartSectionData(
+                                color: const Color(0xFFFFA500),
+                                value: kariesCount == 0 && numberingCount == 0
+                                    ? 0
+                                    : numberingCount.toDouble(),
+                                radius: 12,
+                                showTitle: false,
+                              ),
+                            ],
                           ),
-                          PieChartSectionData(
-                            color: Colors.orange.shade400,
-                            value: 40, // Nilai untuk Karies 1
-                            title: '',
-                            radius: 20,
-                          ),
-                          PieChartSectionData(
-                            color: Colors.lightBlue.shade400,
-                            value: 50, // Nilai untuk Karies 2
-                            title: '',
-                            radius: 20,
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Legend Section (di bawah)
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildLegendItem(
+                          const Color(0xFFFFA500),
+                          'Karies',
+                          kariesCount,
+                        ),
+                        const SizedBox(height: 6),
+                        _buildLegendItem(
+                          const Color(0xFFFF1493),
+                          'Numbering',
+                          numberingCount,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-
-              // 3. Buat Legenda secara manual
-              _buildJenisKerusakan(),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  // Helper widget untuk membuat legenda
-  Widget _buildJenisKerusakan() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildLegendItem(Colors.purple.shade300, 'Karies'),
-        const SizedBox(height: 4),
-        _buildLegendItem(Colors.orange.shade400, 'Karies 1'),
-        const SizedBox(height: 4),
-        _buildLegendItem(Colors.lightBlue.shade400, 'Karies 2'),
-      ],
-    );
-  }
-
-  Widget _buildLegendItem(Color color, String text) {
+  Widget _buildLegendItem(Color color, String text, int count) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(2),
+          ),
         ),
-        const SizedBox(width: 8),
-        Text(text),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        Text(
+          '$count',
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey.shade700,
+          ),
+        ),
       ],
     );
   }

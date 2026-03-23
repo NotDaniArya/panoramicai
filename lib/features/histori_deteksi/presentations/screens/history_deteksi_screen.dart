@@ -64,131 +64,136 @@ class HistoryDeteksiScreen extends GetView<HistoryDeteksiController> {
           );
         }
 
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: controller.historyList.length,
-          itemBuilder: (context, index) {
-            final history = controller.historyList[index];
-            final isCaries = history.type != 'Numbering';
+        return RefreshIndicator(
+          onRefresh: () => controller.fetchHistory(),
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: controller.historyList.length,
+            itemBuilder: (context, index) {
+              final history = controller.historyList[index];
+              final isCaries = history.type != 'Numbering';
 
-            return Card(
-              margin: const EdgeInsets.only(bottom: 16),
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(15),
-                onTap: () {
-                  final deteksiController = Get.put(DeteksiController());
+              return Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(15),
+                  onTap: () {
+                    final deteksiController = Get.put(DeteksiController());
 
-                  deteksiController.detections.clear();
-                  deteksiController.selectedImage.value = null;
+                    deteksiController.detections.clear();
+                    deteksiController.selectedImage.value = null;
 
-                  Get.toNamed(
-                    PagesRoutes.RUTE_HASIL_DETEKSI,
-                    arguments: {
-                      'type': isCaries
-                          ? DeteksiType.caries
-                          : DeteksiType.numbering,
-                      'imageUrl': history.imageUrl,
-                      'isFromHistory': true,
-                      'count': history.jumlahTerdeteksi,
-                    },
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: CachedNetworkImage(
-                          imageUrl: history.imageUrl,
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            color: Colors.grey[200],
-                            child: const Center(
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                    Get.toNamed(
+                      PagesRoutes.RUTE_HASIL_DETEKSI,
+                      arguments: {
+                        'type': isCaries
+                            ? DeteksiType.caries
+                            : DeteksiType.numbering,
+                        'imageUrl': history.imageUrl,
+                        'isFromHistory': true,
+                        'count': history.jumlahTerdeteksi,
+                      },
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: CachedNetworkImage(
+                            imageUrl: history.imageUrl,
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: Colors.grey[200],
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: Colors.grey[200],
+                              child: const Icon(Icons.image_not_supported),
                             ),
                           ),
-                          errorWidget: (context, url, error) => Container(
-                            color: Colors.grey[200],
-                            child: const Icon(Icons.image_not_supported),
-                          ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isCaries
+                                      ? Colors.red.withOpacity(0.1)
+                                      : Colors.blue.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  isCaries ? 'Karies Gigi' : 'Numbering Gigi',
+                                  style: textTheme.labelSmall!.copyWith(
+                                    color: isCaries ? Colors.red : Colors.blue,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
-                              decoration: BoxDecoration(
-                                color: isCaries
-                                    ? Colors.red.withOpacity(0.1)
-                                    : Colors.blue.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                isCaries ? 'Karies Gigi' : 'Numbering Gigi',
-                                style: textTheme.labelSmall!.copyWith(
-                                  color: isCaries ? Colors.red : Colors.blue,
+                              const SizedBox(height: 8),
+                              Text(
+                                isCaries
+                                    ? 'Terdeteksi ${history.jumlahTerdeteksi} Karies'
+                                    : 'Terdeteksi ${history.jumlahTerdeteksi} Gigi',
+                                style: textTheme.titleMedium!.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              isCaries
-                                  ? 'Terdeteksi ${history.jumlahTerdeteksi} Karies'
-                                  : 'Terdeteksi ${history.jumlahTerdeteksi} Gigi',
-                              style: textTheme.titleMedium!.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.calendar_today,
-                                  size: 12,
-                                  color: Colors.grey[600],
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  DateFormat(
-                                    'dd MMM yyyy, HH:mm',
-                                    'id_ID',
-                                  ).format(history.createdAt),
-                                  style: textTheme.labelSmall!.copyWith(
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.calendar_today,
+                                    size: 12,
                                     color: Colors.grey[600],
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    DateFormat(
+                                      'dd MMM yyyy',
+                                      'id_ID',
+                                    ).format(history.createdAt),
+                                    style: textTheme.labelSmall!.copyWith(
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.delete_outline,
-                          color: Colors.redAccent,
+                        IconButton(
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.redAccent,
+                          ),
+                          onPressed: () => controller.deleteHistory(history.id),
                         ),
-                        onPressed: () {},
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         );
       }),
     );

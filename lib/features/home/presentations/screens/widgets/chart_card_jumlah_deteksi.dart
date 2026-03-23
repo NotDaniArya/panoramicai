@@ -1,74 +1,102 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:panoramicai/utils/constant/colors.dart';
 
-class ChartCardJumlahDeteksi extends StatefulWidget {
+class ChartCardJumlahDeteksi extends StatelessWidget {
   const ChartCardJumlahDeteksi({super.key});
 
   @override
-  State<ChartCardJumlahDeteksi> createState() => _ChartCardJumlahDeteksi();
-}
-
-class _ChartCardJumlahDeteksi extends State<ChartCardJumlahDeteksi> {
-  @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return SizedBox(
-      height: 300,
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        color: const Color(0xFFE3F2FD), // Warna latar belakang kartu
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SizedBox(
-                height: 150,
-                width: 150,
-                // 1. Gunakan Stack untuk menumpuk Teks di tengah Bagan
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Teks di tengah
-                    const Text(
-                      '30',
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('histori_deteksi')
+          .snapshots(),
+      builder: (context, snapshot) {
+        int totalUsers = 0; // Ubah nama variabel agar lebih relevan
 
-                    // 2. Bagan Pie dari fl_chart
-                    PieChart(
-                      PieChartData(
-                        // Mengatur agar lubang di tengah ada (ini yang membuatnya jadi donat)
-                        centerSpaceRadius: 50,
+        if (snapshot.hasData) {
+          // Gunakan Set untuk menyaring userId yang duplikat
+          Set<String> uniqueUserIds = {};
 
-                        // Menghilangkan label di setiap bagian
-                        sectionsSpace: 0, // Jarak antar bagian
-                        // Data untuk setiap bagian berwarna
-                        sections: [
-                          PieChartSectionData(
-                            color: Colors.lightBlue.shade400,
-                            value: 100, // Nilai untuk Karies
-                            title: '',
-                            radius: 20,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+          for (var doc in snapshot.data!.docs) {
+            final data = doc.data() as Map<String, dynamic>;
+            final String? userId = data['userId'] as String?;
+
+            // Masukkan userId ke dalam Set jika tidak null/kosong
+            if (userId != null && userId.isNotEmpty) {
+              uniqueUserIds.add(userId);
+            }
+          }
+
+          // Panjang dari Set ini adalah jumlah orang/user yang unik
+          totalUsers = uniqueUserIds.length;
+        }
+
+        return SizedBox(
+          height: 240,
+          child: Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            color: const Color(0xFFE3F2FD),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 12.0,
               ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Text(
+                          '$totalUsers', // Tampilkan variabel yang baru
+                          style: const TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: TColors.primaryColor,
+                          ),
+                        ),
+                        PieChart(
+                          PieChartData(
+                            centerSpaceRadius: 40,
+                            sectionsSpace: 0,
+                            sections: [
+                              PieChartSectionData(
+                                color: TColors.primaryColor.withOpacity(0.8),
+                                value: totalUsers == 0
+                                    ? 1
+                                    : totalUsers.toDouble(),
+                                title: '',
+                                radius: 12,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
 
-              const Text('Orang mendeteksi', textAlign: TextAlign.center),
-            ],
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Orang Mendeteksi', // Label disesuaikan agar lebih logis
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
