@@ -4,7 +4,13 @@ import 'package:panoramicai/features/home/presentations/screens/widgets/chart_ca
 import 'package:panoramicai/features/profile/presentations/screens/profile_screen.dart';
 import 'package:panoramicai/utils/constant/images.dart';
 import 'package:panoramicai/utils/constant/sizes.dart';
+import 'package:panoramicai/utils/shared_widgets/avatar_image.dart';
 import 'package:panoramicai/utils/shared_widgets/information_slider.dart';
+
+import '../../../../utils/constant/colors.dart';
+import 'package:get/get.dart';
+
+import '../../../profile/presentations/controllers/profile_controller.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -12,6 +18,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final profileController = Get.put(UserProfileController());
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -22,19 +29,27 @@ class HomeScreen extends StatelessWidget {
           children: [
             Image.asset('assets/images/logo_app.png', width: 40, height: 40),
             const SizedBox(width: TSizes.smallSpace),
-            Text('Panoramic AI', style: textTheme.titleMedium),
+            Text(
+              'Panoramic AI',
+              style: textTheme.titleMedium!.copyWith(
+                fontWeight: FontWeight.bold,
+                color: TColors.primaryColor,
+              ),
+            ),
           ],
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: TSizes.mediumSpace),
             child: IconButton(
-              icon: const SizedBox(
-                width: 30,
-                height: 30,
-                child: CircleAvatar(
-                  backgroundColor: Colors.black,
-                  child: Icon(Icons.person, color: Colors.white, size: 20),
+              icon: SizedBox(
+                width: 40,
+                height: 40,
+                child: Obx(
+                  () => AvatarImage(
+                    imageUrl: profileController.userProfile.value?.photoUrl,
+                    radius: 60,
+                  ),
                 ),
               ),
               onPressed: () {

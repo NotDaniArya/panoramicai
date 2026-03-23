@@ -35,6 +35,8 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
 
     final croppedFile = await ImageCropper().cropImage(
       sourcePath: pickedImage.path,
+      maxWidth: 1080,
+      maxHeight: 1080,
       uiSettings: [
         AndroidUiSettings(
           toolbarTitle: 'Sesuaikan Profile',
@@ -42,6 +44,10 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
           toolbarWidgetColor: Colors.white,
           initAspectRatio: CropAspectRatioPreset.square,
           lockAspectRatio: true,
+          statusBarColor: Theme.of(context).colorScheme.primary, // Memberi warna solid pada status bar
+          backgroundColor: Colors.white, // Warna background area crop
+          activeControlsWidgetColor: Theme.of(context).colorScheme.primary, // Warna tombol kontrol
+          hideBottomControls: false,
         ), // Kunci rasio agar tetap persegi
         IOSUiSettings(
           title: 'Potong Gambar',

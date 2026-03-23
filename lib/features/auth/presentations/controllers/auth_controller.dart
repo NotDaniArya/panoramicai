@@ -47,6 +47,9 @@ class AuthController extends GetxController {
       'userName': firebaseUser.displayName,
       'photoUrl': firebaseUser.photoURL,
       'lastLogin': FieldValue.serverTimestamp(),
+      'tanggalLahir': '',
+      'institusi': '',
+      'npa': '',
     }, SetOptions(merge: true));
   }
 }
