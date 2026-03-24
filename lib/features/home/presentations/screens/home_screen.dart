@@ -116,10 +116,11 @@ class HomeScreen extends StatelessWidget {
                       isHaveInformation: true,
                     ),
                   ),
-                  const SizedBox(height: TSizes.spaceBtwItems),
+                  const SizedBox(height: TSizes.spaceBtwItems * 6),
                 ],
               ),
             ),
+
           ],
         ),
       ),

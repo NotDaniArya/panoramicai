@@ -172,6 +172,27 @@ class ProfileScreen extends GetView<UserProfileController> {
                         },
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    !controller.isLoading.value
+                        ? SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed: () => _showLogoutConfirmationDialog(context),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.red,
+                              side: const BorderSide(color: Colors.red, width: 1.5),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text(
+                              'Keluar Akun',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                          ),
+                        )
+                        : const SizedBox.shrink(),
                   ],
                 ),
               ),
@@ -179,29 +200,6 @@ class ProfileScreen extends GetView<UserProfileController> {
           ),
         );
       }),
-      bottomNavigationBar: !controller.isLoading.value
-          ? Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () => _showLogoutConfirmationDialog(context),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    side: const BorderSide(color: Colors.red, width: 1.5),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    'Keluar Akun',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                ),
-              ),
-            )
-          : const SizedBox.shrink(),
     );
   }
 

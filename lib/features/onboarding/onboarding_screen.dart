@@ -37,18 +37,31 @@ class OnboardingScreen extends StatelessWidget {
                   height: 272,
                 ),
                 const SizedBox(height: TSizes.spaceBtwSections),
-                SizedBox(
-                  width: 250,
-                  child: MyButton(
-                    text: 'Login',
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
-                        ),
-                      );
-                    },
+                Obx(
+                  () => SizedBox(
+                    width: 250,
+                    child: MyButton(
+                      child: controller.isLoading.value
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: TColors.primaryColor,
+                                  strokeWidth: 3,
+                                ),
+                              ),
+                            )
+                          : Text(
+                              'Login',
+                              style: textTheme.titleMedium!.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                      onPressed: () => controller.isLoading.value
+                          ? null
+                          : Get.to(() => const LoginScreen()),
+                    ),
                   ),
                 ),
                 const SizedBox(height: TSizes.smallSpace),
@@ -59,36 +72,64 @@ class OnboardingScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: TSizes.smallSpace),
-                SizedBox(
-                  width: 250,
-                  child: MyButton(
-                    text: 'Register',
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterScreen(),
-                        ),
-                      );
-                    },
+                Obx(
+                  () => SizedBox(
+                    width: 250,
+                    child: MyButton(
+                      child: controller.isLoading.value
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: TColors.primaryColor,
+                                  strokeWidth: 3,
+                                ),
+                              ),
+                            )
+                          : Text(
+                              'Register',
+                              style: textTheme.titleMedium!.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                      onPressed: () => controller.isLoading.value
+                          ? null
+                          : Get.to(() => const RegisterScreen()),
+                    ),
                   ),
                 ),
-                SizedBox(
-                  width: 250,
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.black, width: 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadiusGeometry.circular(50),
+                Obx(
+                  () => SizedBox(
+                    width: 250,
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Colors.black, width: 1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadiusGeometry.circular(50),
+                        ),
                       ),
-                    ),
-                    onPressed: () => controller.signInWithGoogle(),
-                    icon: Image.asset('assets/icons/google.png', width: 30),
-                    label: Text(
-                      'Login with Google',
-                      style: textTheme.titleMedium!.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      onPressed: () => controller.signInWithGoogle(),
+                      icon: controller.isLoading.value
+                          ? const SizedBox.shrink()
+                          : Image.asset('assets/icons/google.png', width: 30),
+                      label: controller.isLoading.value
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: TColors.primaryColor,
+                                  strokeWidth: 3,
+                                ),
+                              ),
+                            )
+                          : Text(
+                              'Login with Google',
+                              style: textTheme.titleMedium!.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ),
                   ),
                 ),

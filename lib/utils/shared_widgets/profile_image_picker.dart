@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../constant/colors.dart';
@@ -33,34 +32,8 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
 
     if (pickedImage == null) return;
 
-    final croppedFile = await ImageCropper().cropImage(
-      sourcePath: pickedImage.path,
-      maxWidth: 1080,
-      maxHeight: 1080,
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Sesuaikan Profile',
-          toolbarColor: Theme.of(context).colorScheme.primary,
-          toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.square,
-          lockAspectRatio: true,
-          statusBarColor: Theme.of(context).colorScheme.primary, // Memberi warna solid pada status bar
-          backgroundColor: Colors.white, // Warna background area crop
-          activeControlsWidgetColor: Theme.of(context).colorScheme.primary, // Warna tombol kontrol
-          hideBottomControls: false,
-        ), // Kunci rasio agar tetap persegi
-        IOSUiSettings(
-          title: 'Potong Gambar',
-          aspectRatioLockEnabled: true,
-          aspectRatioPickerButtonHidden: true,
-        ),
-      ],
-    );
-
-    if (croppedFile == null) return;
-
     setState(() {
-      _pickedImageFile = File(croppedFile.path);
+      _pickedImageFile = File(pickedImage.path);
     });
 
     widget.onImageSelected(_pickedImageFile!);

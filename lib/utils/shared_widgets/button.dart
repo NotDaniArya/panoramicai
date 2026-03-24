@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class MyButton extends StatelessWidget {
-  const MyButton({super.key, required this.text, required this.onPressed});
+  const MyButton({super.key, required this.child, required this.onPressed});
 
-  final String text;
+  final Widget child;
   final void Function()? onPressed;
 
   @override
@@ -18,10 +18,7 @@ class MyButton extends StatelessWidget {
         ),
       ),
       onPressed: onPressed,
-      child: Text(
-        text,
-        style: textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
-      ),
+      child: child,
     );
   }
 }

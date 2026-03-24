@@ -26,7 +26,7 @@ class PilihDeteksiScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 40),
+                          const SizedBox(height: 24),
                           Text(
                             "Pilih Jenis\nDeteksi Gigi",
                             style: Theme.of(context).textTheme.headlineLarge

@@ -12,7 +12,28 @@
           "package_name": "com.ardev.panoramicai"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "290012682072-9d517drh1jrf0l5fv1kntasr78d85del.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ardev.panoramicai",
+            "certificate_hash": "7c04126065eab03fbed515d2692b5cf0f7391735"
+          }
+        },
+        {
+          "client_id": "290012682072-q94q3blbbl7jkdsmr80gmsolesa9ikem.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ardev.panoramicai",
+            "certificate_hash": "cee3e4e8bb75f5653b4503e06d0a6e242ea66133"
+          }
+        },
+        {
+          "client_id": "290012682072-775jf51va80pq0tt80i237a9bn87osv6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAQM8UmYWIMCd4gknoCICoUOUaFQexuWoc"
@@ -20,7 +41,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "290012682072-775jf51va80pq0tt80i237a9bn87osv6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "290012682072-nr2uf2tj5j7itqrno680sqtsavvl3shr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ardev.panoramicai"
+              }
+            }
+          ]
         }
       }
     }

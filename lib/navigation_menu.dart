@@ -1,118 +1,173 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:panoramicai/features/deteksi/presentations/screens/pilih_deteksi_screen.dart';
+import 'package:panoramicai/features/histori_deteksi/presentations/screens/history_deteksi_screen.dart';
+import 'package:panoramicai/features/home/presentations/screens/home_screen.dart';
+import 'package:panoramicai/features/profile/presentations/screens/profile_screen.dart'; // Pastikan path ini benar
 import 'package:panoramicai/utils/constant/colors.dart';
 
-import 'features/histori_deteksi/presentations/screens/history_deteksi_screen.dart';
-import 'features/home/presentations/screens/home_screen.dart';
+class NavigationController extends GetxController {
+  final RxInt selectedIndex = 0.obs;
 
-class NavigationMenu extends StatefulWidget {
-  const NavigationMenu({super.key});
-
-  @override
-  State<NavigationMenu> createState() => _NavigationMenuState();
-}
-
-class _NavigationMenuState extends State<NavigationMenu> {
-  int _selectedIndex = 0; // State untuk melacak tab yang aktif
-
-  static final List<Widget> _listMenu = [
-    // const HomeScreen(),
+  final List<Widget> screens = [
     const HomeScreen(),
     const PilihDeteksiScreen(),
     const HistoryDeteksiScreen(),
+    const ProfileScreen(), // Menambahkan layar profil
   ];
+}
 
-  void _onSelectedMenu(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+class NavigationMenu extends StatelessWidget {
+  const NavigationMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: TColors.backgroundColor,
-      // extendBody: true, // Membuat body bisa berada di belakang navbar
-      body: _listMenu[_selectedIndex],
+    final controller = Get.put(NavigationController());
 
-      // 3. Gunakan BottomAppBar, bukan BottomNavigationBar
+    return Scaffold(
+      extendBody: true, // Membuat body berada di belakang navbar agar efek transparan terlihat
+      backgroundColor: TColors.backgroundColor,
+      body: Obx(() => controller.screens[controller.selectedIndex.value]),
       bottomNavigationBar: Container(
+        margin: const EdgeInsets.fromLTRB(20, 0, 20, 20), // Memberikan jarak agar terlihat melayang
         decoration: BoxDecoration(
-          color: Colors.white, // Anda bisa atur warna bar di sini
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              // Atur warna dan transparansi bayangan
-              color: Colors.black.withOpacity(0.18),
-              // Atur tingkat blur
-              blurRadius: 20,
-              // Atur seberapa menyebar bayangannya
-              spreadRadius: 5,
-              // KUNCI UTAMA: Atur posisi bayangan (x, y)
-              // Nilai y negatif berarti bayangan akan bergeser ke atas
-              offset: const Offset(0, -3),
+              color: TColors.primaryColor.withOpacity(0.15),
+              blurRadius: 30,
+              offset: const Offset(0, 10),
             ),
           ],
         ),
-        child: BottomAppBar(
-          color: Colors.white,
-
-          clipBehavior: Clip.antiAlias,
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              // Item Navigasi di Kiri
-              _buildNavItem(
-                icon: FontAwesomeIcons.home,
-                label: 'Dashboard ',
-                index: 0,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: BottomAppBar(
+            elevation: 0,
+            color: Colors.transparent,
+            child: SizedBox(
+              height: 70,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildNavItem(
+                    icon: FontAwesomeIcons.house,
+                    activeIcon: FontAwesomeIcons.houseUser,
+                    label: 'Home',
+                    index: 0,
+                    controller: controller,
+                  ),
+                  _buildNavItem(
+                    icon: FontAwesomeIcons.stethoscope,
+                    activeIcon: FontAwesomeIcons.stethoscope,
+                    label: 'Deteksi',
+                    index: 1,
+                    controller: controller,
+                    isSpecial: true, // Memberikan penekanan pada tombol deteksi
+                  ),
+                  _buildNavItem(
+                    icon: FontAwesomeIcons.clockRotateLeft,
+                    activeIcon: FontAwesomeIcons.clockRotateLeft,
+                    label: 'History',
+                    index: 2,
+                    controller: controller,
+                  ),
+                  _buildNavItem(
+                    icon: FontAwesomeIcons.user,
+                    activeIcon: FontAwesomeIcons.userCheck,
+                    label: 'Profil',
+                    index: 3,
+                    controller: controller,
+                  ),
+                ],
               ),
-              _buildNavItem(
-                icon: FontAwesomeIcons.stethoscope,
-                label: 'Deteksi',
-                index: 1,
-              ),
-
-              // Item Navigasi di Kanan
-              _buildNavItem(
-                icon: FontAwesomeIcons.clockRotateLeft,
-                label: 'Rekam Medis',
-                index: 2,
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  // Helper widget untuk membuat setiap item navigasi agar kode tidak berulang
   Widget _buildNavItem({
     required IconData icon,
+    required IconData activeIcon,
     required String label,
     required int index,
+    required NavigationController controller,
+    bool isSpecial = false,
   }) {
-    final isSelected = _selectedIndex == index;
-    final color = isSelected ? Colors.black : Colors.grey;
-    final textTheme = Theme.of(context).textTheme;
+    return Obx(() {
+      final isSelected = controller.selectedIndex.value == index;
+      final color = isSelected ? TColors.primaryColor : Colors.grey.shade400;
 
-    return InkWell(
-      onTap: () => _onSelectedMenu(index),
-      borderRadius: BorderRadius.circular(20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: textTheme.labelSmall!.copyWith(
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      if (isSpecial) {
+        return GestureDetector(
+          onTap: () => controller.selectedIndex.value = index,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isSelected ? TColors.primaryColor : TColors.primaryColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: TColors.primaryColor.withOpacity(0.4),
+                        blurRadius: 15,
+                        offset: const Offset(0, 8),
+                      )
+                    ]
+                  : [],
+            ),
+            child: Icon(
+              isSelected ? activeIcon : icon,
+              color: isSelected ? Colors.white : TColors.primaryColor,
+              size: 24,
             ),
           ),
-        ],
-      ),
-    );
+        );
+      }
+
+      return InkWell(
+        onTap: () => controller.selectedIndex.value = index,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedScale(
+              scale: isSelected ? 1.2 : 1.0,
+              duration: const Duration(milliseconds: 200),
+              child: Icon(
+                isSelected ? activeIcon : icon,
+                color: color,
+                size: 22,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+            if (isSelected)
+              Container(
+                margin: const EdgeInsets.only(top: 2),
+                height: 4,
+                width: 4,
+                decoration: const BoxDecoration(
+                  color: TColors.primaryColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
+          ],
+        ),
+      );
+    });
   }
 }

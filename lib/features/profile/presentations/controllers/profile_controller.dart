@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:panoramicai/features/onboarding/onboarding_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 import '../../../../utils/helper_functions/helper.dart';
@@ -36,15 +38,6 @@ class UserProfileController extends GetxController {
     tanggalLahirController = TextEditingController();
 
     fetchUserProfile();
-  }
-
-  @override
-  void onClose() {
-    fullNameController.dispose();
-    institusiController.dispose();
-    npaController.dispose();
-    tanggalLahirController.dispose();
-    super.onClose();
   }
 
   Future<void> fetchUserProfile() async {
@@ -123,20 +116,21 @@ class UserProfileController extends GetxController {
 
       selectedImage.value = null;
 
-      MyHelperFunction.suksesToast('Profil berhasil diperbarui');
+      isUpdating.value = false;
+
       Get.back();
+      MyHelperFunction.suksesToast('Profil berhasil diperbarui'); //
     } catch (e) {
       debugPrint('Error updating profile: $e');
       MyHelperFunction.errorToast('Gagal memperbarui profil: $e');
-    } finally {
-      isUpdating.value = false;
     }
   }
 
   Future<void> logout() async {
     try {
       await FirebaseAuth.instance.signOut();
-      Get.offAll(() => const LoginScreen());
+      await GoogleSignIn().signOut();
+      Get.offAll(() => const OnboardingScreen());
     } catch (e) {
       debugPrint('Error logging out: $e');
       MyHelperFunction.errorToast('Terjadi kesalahan saat logout: $e');

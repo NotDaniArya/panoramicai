@@ -9,8 +9,15 @@ import '../../../../utils/shared_widgets/button.dart';
 import '../../../../utils/shared_widgets/input_text_field.dart';
 import '../controllers/profile_controller.dart';
 
-class EditProfileScreen extends GetView<UserProfileController> {
+class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
+
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  final controller = Get.put(UserProfileController());
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -20,8 +27,10 @@ class EditProfileScreen extends GetView<UserProfileController> {
       lastDate: DateTime.now(),
     );
     if (picked != null) {
-      controller.tanggalLahirController.text =
-          DateFormat('dd MMMM yyyy', 'id_ID').format(picked);
+      controller.tanggalLahirController.text = DateFormat(
+        'dd MMMM yyyy',
+        'id_ID',
+      ).format(picked);
     }
   }
 
@@ -94,6 +103,7 @@ class EditProfileScreen extends GetView<UserProfileController> {
                   TInputTextField(
                     controller: controller.institusiController,
                     labelText: 'Institusi',
+                    maxLength: 50,
                     icon: Icons.business_outlined,
                     inputType: TextInputType.text,
                   ),
@@ -102,6 +112,7 @@ class EditProfileScreen extends GetView<UserProfileController> {
                   TInputTextField(
                     controller: controller.npaController,
                     labelText: 'NPA (Nomor Pokok Anggota PDGI)',
+                    minLength: 4,
                     icon: Icons.badge_outlined,
                     inputType: TextInputType.number,
                   ),
@@ -109,12 +120,28 @@ class EditProfileScreen extends GetView<UserProfileController> {
                   const SizedBox(height: 40),
 
                   Obx(
-                    () => controller.isUpdating.value
-                        ? const Center(child: CircularProgressIndicator())
-                        : MyButton(
-                            text: 'Simpan Perubahan',
-                            onPressed: () => controller.updateUserProfile(),
-                          ),
+                    () => MyButton(
+                      child: controller.isUpdating.value
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: TColors.primaryColor,
+                                  strokeWidth: 3,
+                                ),
+                              ),
+                            )
+                          : Text(
+                              'Simpan Perubahan',
+                              style: textTheme.titleMedium!.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                      onPressed: () => controller.isUpdating.value
+                          ? null
+                          : controller.updateUserProfile(),
+                    ),
                   ),
                 ],
               ),

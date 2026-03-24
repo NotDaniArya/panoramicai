@@ -12,11 +12,13 @@ import 'package:panoramicai/features/deteksi/presentations/screens/pilih_deteksi
 import 'package:panoramicai/features/onboarding/onboarding_screen.dart';
 import 'package:panoramicai/features/profile/presentations/screens/profile_screen.dart';
 import 'package:panoramicai/navigation_menu.dart';
+import 'package:panoramicai/splash_screen.dart';
 import 'package:panoramicai/utils/constant/colors.dart';
 import 'package:panoramicai/utils/constant/pages_routes.dart';
 import 'package:panoramicai/utils/constant/texts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'features/profile/bindings/user_profile_binding.dart';
 import 'firebase_options.dart';
 
 final theme = ThemeData().copyWith(
@@ -49,10 +51,17 @@ class MyApp extends StatelessWidget {
       title: 'PanoramicAi',
       debugShowCheckedModeBanner: false,
       theme: theme,
-      home: const OnboardingScreen(),
+      home: const SplashScreen(),
       getPages: [
-        GetPage(name: PagesRoutes.RUTE_HOME, page: () => const NavigationMenu()),
-        GetPage(name: PagesRoutes.RUTE_PROFILE, page: () => const ProfileScreen()),
+        GetPage(
+          name: PagesRoutes.RUTE_HOME,
+          page: () => const NavigationMenu(),
+        ),
+        GetPage(
+          name: PagesRoutes.RUTE_PROFILE,
+          page: () => const ProfileScreen(),
+          binding: UserProfileBinding(),
+        ),
         GetPage(
           name: PagesRoutes.RUTE_HASIL_DETEKSI,
           page: () {

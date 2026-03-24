@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:panoramicai/navigation_menu.dart';
 
 import '../../../../../utils/constant/colors.dart';
 import '../../../../../utils/constant/sizes.dart';
 import '../../../../../utils/shared_widgets/button.dart';
 import '../../../../../utils/shared_widgets/input_text_field.dart';
+import '../../controllers/auth_controller.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,30 +17,27 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _form = GlobalKey<FormState>();
+  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
   String _enteredEmail = '';
   String _enteredPass = '';
   bool _isPasswordVisible = false;
 
-  void _submitLogin() {
-    final isValid = _form.currentState!.validate();
-
-    if (!isValid) {
-      return;
-    }
-
-    _form.currentState!.save();
-
-    // ref
-    //     .read(authNotifierProvider.notifier)
-    //     .login(email: _enteredEmail, password: _enteredPass);
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _passwordController.dispose();
+    _emailController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<AuthController>();
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: TColors.backgroundColor,
+      backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
           child: Container(
@@ -61,21 +60,40 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 170,
                   fit: BoxFit.cover,
                 ),
+                const SizedBox(height: TSizes.spaceBtwSections),
                 Form(
                   key: _form,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      TInputTextField(
-                        icon: Icons.email_rounded,
-                        labelText: 'Email',
-                        inputType: TextInputType.emailAddress,
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          prefixIcon: const Icon(Icons.email_rounded),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          isDense: true,
+                        ),
+                        validator: (value) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              !value.contains('@')) {
+                            return 'Email tidak valid';
+                          }
+
+                          return null;
+                        },
                         onSaved: (value) {
                           _enteredEmail = value!;
                         },
+                        keyboardType: TextInputType.emailAddress,
+                        maxLength: 70,
                       ),
                       const SizedBox(height: TSizes.spaceBtwItems),
                       TextFormField(
+                        controller: _passwordController,
                         obscureText: !_isPasswordVisible,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
@@ -114,41 +132,50 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                       const SizedBox(height: TSizes.smallSpace),
-                      SizedBox(
-                        width: double.infinity,
-                        child: TextButton(
-                          onPressed: () {},
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: Size.zero,
-                          ),
-                          child: Text(
-                            'Lupa password?',
-                            textAlign: TextAlign.end,
-                            style: textTheme.bodyMedium!.copyWith(
-                              color: TColors.secondaryText,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: TSizes.spaceBtwItems),
-                SizedBox(
-                  width: 250,
-                  child: MyButton(
-                    text: 'Login',
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const NavigationMenu(),
-                        ),
-                        (route) => false,
-                      );
-                    },
+                Obx(
+                  () => SizedBox(
+                    width: 250,
+                    child: MyButton(
+                      child: controller.isLoading.value
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: TColors.primaryColor,
+                                  strokeWidth: 3,
+                                ),
+                              ),
+                            )
+                          : Text(
+                              'Login',
+                              style: textTheme.titleMedium!.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                      onPressed: () {
+                        if (controller.isLoading.value) {
+                          return;
+                        }
+
+                        final isValid = _form.currentState!.validate();
+
+                        if (!isValid) {
+                          return;
+                        }
+
+                        _form.currentState!.save();
+
+                        controller.signInWithEmail(
+                          email: _enteredEmail,
+                          password: _enteredPass,
+                        );
+                      },
+                    ),
                   ),
                 ),
               ],

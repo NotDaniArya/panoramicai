@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:panoramicai/features/auth/presentations/controllers/auth_controller.dart';
 
 import '../../../../../utils/constant/colors.dart';
 import '../../../../../utils/constant/sizes.dart';
@@ -15,41 +17,28 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _form = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _fullNameController = TextEditingController();
   String _enteredFullName = '';
   String _enteredEmail = '';
+  String _enteredPassword = '';
   bool _isPasswordVisible = false;
-
-  void _submitSignUp() {
-    final isValid = _form.currentState!.validate();
-
-    if (!isValid) {
-      return;
-    }
-
-    _form.currentState!.save();
-
-    // ref
-    //     .read(authNotifierProvider.notifier)
-    //     .register(
-    //       name: _enteredFullName,
-    //       email: _enteredEmail,
-    //       password: _passwordController.text,
-    //       passwordConfirm: _passwordController.text,
-    //     );
-  }
 
   @override
   void dispose() {
+    _emailController.dispose();
+    _fullNameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<AuthController>();
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: TColors.backgroundColor,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -78,8 +67,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: TSizes.smallSpace),
                     TInputTextField(
+                      controller: _fullNameController,
                       labelText: 'Username',
-                      maxLength: 20,
+                      maxLength: 50,
                       icon: Icons.person,
                       minLength: 4,
                       inputType: TextInputType.name,
@@ -88,23 +78,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                     ),
                     const SizedBox(height: TSizes.spaceBtwItems),
-                    TInputTextField(
-                      icon: Icons.phone,
-                      maxLength: 12,
-                      labelText: 'No. Hp',
-                      inputType: TextInputType.emailAddress,
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        prefixIcon: const Icon(Icons.email_rounded),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        isDense: true,
+                      ),
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty ||
+                            !value.contains('@')) {
+                          return 'Email tidak valid';
+                        }
+
+                        return null;
+                      },
                       onSaved: (value) {
                         _enteredEmail = value!;
                       },
-                    ),
-                    const SizedBox(height: TSizes.spaceBtwItems),
-                    TInputTextField(
-                      icon: Icons.email_rounded,
-                      labelText: 'Email',
-                      inputType: TextInputType.emailAddress,
-                      onSaved: (value) {
-                        _enteredEmail = value!;
-                      },
+                      keyboardType: TextInputType.emailAddress,
+                      maxLength: 70,
                     ),
                     const SizedBox(height: TSizes.spaceBtwItems),
                     TextFormField(
@@ -141,12 +138,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         }
                         return null;
                       },
+                      onChanged: (value) {
+                        _enteredPassword = value;
+                      },
                     ),
                     const SizedBox(height: TSizes.spaceBtwItems),
 
-                    SizedBox(
-                      width: double.infinity,
-                      child: MyButton(text: 'Register', onPressed: () {}),
+                    Obx(
+                      () => SizedBox(
+                        width: double.infinity,
+                        child: MyButton(
+                          child: controller.isLoading.value
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: TColors.primaryColor,
+                                      strokeWidth: 3,
+                                    ),
+                                  ),
+                                )
+                              : Text(
+                                  'Register',
+                                  style: textTheme.titleMedium!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                          onPressed: () {
+                            if (controller.isLoading.value) {
+                              return;
+                            }
+
+                            final isValid = _form.currentState!.validate();
+
+                            if (!isValid) {
+                              return;
+                            }
+
+                            _form.currentState!.save();
+
+                            controller.register(
+                              email: _enteredEmail,
+                              password: _enteredPassword,
+                              fullName: _enteredFullName,
+                            );
+                          },
+                        ),
+                      ),
                     ),
                   ],
                 ),
