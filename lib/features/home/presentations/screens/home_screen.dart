@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:panoramicai/features/home/presentations/screens/widgets/chart_card_jenis_kerusakan.dart';
 import 'package:panoramicai/features/home/presentations/screens/widgets/chart_card_jumlah_deteksi.dart';
-import 'package:panoramicai/features/profile/presentations/screens/profile_screen.dart';
 import 'package:panoramicai/utils/constant/images.dart';
 import 'package:panoramicai/utils/constant/sizes.dart';
 import 'package:panoramicai/utils/shared_widgets/avatar_image.dart';
 import 'package:panoramicai/utils/shared_widgets/information_slider.dart';
 
 import '../../../../utils/constant/colors.dart';
-import 'package:get/get.dart';
-
 import '../../../profile/presentations/controllers/profile_controller.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -52,14 +50,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfileScreen(),
-                  ),
-                );
-              },
+              onPressed: () {},
             ),
           ),
         ],
@@ -69,9 +60,14 @@ class HomeScreen extends StatelessWidget {
           children: [
             Container(
               margin: const EdgeInsets.only(top: TSizes.scaffoldPadding),
-              child: const InformationSlider(
-                imageList: MyImages.homeImageTopList,
-                isHaveInformation: false,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  'assets/images/image_home_top1.jpeg',
+                  fit: BoxFit.cover,
+                  width: 360,
+                  height: 220,
+                ),
               ),
             ),
             const SizedBox(height: TSizes.spaceBtwSections),
@@ -116,11 +112,10 @@ class HomeScreen extends StatelessWidget {
                       isHaveInformation: true,
                     ),
                   ),
-                  const SizedBox(height: TSizes.spaceBtwItems * 6),
+                  const SizedBox(height: TSizes.spaceBtwItems * 7),
                 ],
               ),
             ),
-
           ],
         ),
       ),
