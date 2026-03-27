@@ -74,7 +74,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       minLength: 4,
                       inputType: TextInputType.name,
                       onSaved: (value) {
-                        _enteredFullName = value!;
+                        _enteredFullName = value!.trim();
                       },
                     ),
                     const SizedBox(height: TSizes.spaceBtwItems),
@@ -89,16 +89,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         isDense: true,
                       ),
                       validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            !value.contains('@')) {
-                          return 'Email tidak valid';
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Email tidak boleh kosong';
+                        }
+
+                        if (!GetUtils.isEmail(value.trim())) {
+                          return 'Format email tidak valid!';
                         }
 
                         return null;
                       },
                       onSaved: (value) {
-                        _enteredEmail = value!;
+                        _enteredEmail = value!.trim();
                       },
                       keyboardType: TextInputType.emailAddress,
                       maxLength: 70,

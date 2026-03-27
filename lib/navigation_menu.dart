@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:panoramicai/features/deteksi/presentations/screens/pilih_deteksi_screen.dart';
 import 'package:panoramicai/features/histori_deteksi/presentations/screens/history_deteksi_screen.dart';
 import 'package:panoramicai/features/home/presentations/screens/home_screen.dart';
-import 'package:panoramicai/features/profile/presentations/screens/profile_screen.dart'; // Pastikan path ini benar
+import 'package:panoramicai/features/profile/presentations/screens/profile_screen.dart';
 import 'package:panoramicai/utils/constant/colors.dart';
 
 class NavigationController extends GetxController {
@@ -14,7 +14,7 @@ class NavigationController extends GetxController {
     const HomeScreen(),
     const PilihDeteksiScreen(),
     const HistoryDeteksiScreen(),
-    const ProfileScreen(), // Menambahkan layar profil
+    const ProfileScreen(),
   ];
 }
 
@@ -26,11 +26,11 @@ class NavigationMenu extends StatelessWidget {
     final controller = Get.put(NavigationController());
 
     return Scaffold(
-      extendBody: true, // Membuat body berada di belakang navbar agar efek transparan terlihat
+      extendBody: true,
       backgroundColor: TColors.backgroundColor,
       body: Obx(() => controller.screens[controller.selectedIndex.value]),
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.fromLTRB(20, 0, 20, 20), // Memberikan jarak agar terlihat melayang
+        margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(30),
@@ -65,7 +65,6 @@ class NavigationMenu extends StatelessWidget {
                     label: 'Deteksi',
                     index: 1,
                     controller: controller,
-                    isSpecial: true, // Memberikan penekanan pada tombol deteksi
                   ),
                   _buildNavItem(
                     icon: FontAwesomeIcons.clockRotateLeft,
@@ -96,39 +95,10 @@ class NavigationMenu extends StatelessWidget {
     required String label,
     required int index,
     required NavigationController controller,
-    bool isSpecial = false,
   }) {
     return Obx(() {
       final isSelected = controller.selectedIndex.value == index;
       final color = isSelected ? TColors.primaryColor : Colors.grey.shade400;
-
-      if (isSpecial) {
-        return GestureDetector(
-          onTap: () => controller.selectedIndex.value = index,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isSelected ? TColors.primaryColor : TColors.primaryColor.withOpacity(0.1),
-              shape: BoxShape.circle,
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: TColors.primaryColor.withOpacity(0.4),
-                        blurRadius: 15,
-                        offset: const Offset(0, 8),
-                      )
-                    ]
-                  : [],
-            ),
-            child: Icon(
-              isSelected ? activeIcon : icon,
-              color: isSelected ? Colors.white : TColors.primaryColor,
-              size: 24,
-            ),
-          ),
-        );
-      }
 
       return InkWell(
         onTap: () => controller.selectedIndex.value = index,

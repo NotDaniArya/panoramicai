@@ -80,10 +80,7 @@ class ProfileScreen extends GetView<UserProfileController> {
                 ),
                 child: Column(
                   children: [
-                    AvatarImage(
-                      imageUrl: user.photoUrl,
-                      radius: 60,
-                    ),
+                    AvatarImage(imageUrl: user.photoUrl, radius: 60),
                     const SizedBox(height: 16),
                     Text(
                       user.userName,
@@ -116,20 +113,24 @@ class ProfileScreen extends GetView<UserProfileController> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Detail Information Cards
                     _buildInfoCard(
                       context,
                       icon: Icons.cake_outlined,
                       label: 'Tanggal Lahir',
-                      value: user.tanggalLahir?.isNotEmpty == true ? user.tanggalLahir! : '-',
+                      value: user.tanggalLahir?.isNotEmpty == true
+                          ? user.tanggalLahir!
+                          : '-',
                     ),
                     const SizedBox(height: 12),
                     _buildInfoCard(
                       context,
                       icon: Icons.business_outlined,
                       label: 'Institusi',
-                      value: user.institusi?.isNotEmpty == true ? user.institusi! : '-',
+                      value: user.institusi?.isNotEmpty == true
+                          ? user.institusi!
+                          : '-',
                     ),
                     const SizedBox(height: 12),
                     _buildInfoCard(
@@ -172,27 +173,37 @@ class ProfileScreen extends GetView<UserProfileController> {
                         },
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: TSizes.spaceBtwSections),
                     !controller.isLoading.value
                         ? SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: () => _showLogoutConfirmationDialog(context),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.red,
-                              side: const BorderSide(color: Colors.red, width: 1.5),
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                            width: double.infinity,
+                            child: OutlinedButton(
+                              onPressed: () =>
+                                  _showLogoutConfirmationDialog(context),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.red,
+                                side: const BorderSide(
+                                  color: Colors.red,
+                                  width: 1.5,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: const Text(
+                                'Keluar Akun',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                             ),
-                            child: const Text(
-                              'Keluar Akun',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
-                          ),
-                        )
+                          )
                         : const SizedBox.shrink(),
+                    const SizedBox(height: TSizes.spaceBtwItems * 7),
                   ],
                 ),
               ),
@@ -203,7 +214,12 @@ class ProfileScreen extends GetView<UserProfileController> {
     );
   }
 
-  Widget _buildInfoCard(BuildContext context, {required IconData icon, required String label, required String value}) {
+  Widget _buildInfoCard(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
     final textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(16),
