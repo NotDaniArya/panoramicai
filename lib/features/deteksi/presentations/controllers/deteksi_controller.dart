@@ -17,12 +17,9 @@ import 'package:panoramicai/utils/helper_functions/image_processing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:tflite_flutter/tflite_flutter.dart';
 
-// ============================================================================
-// ISOLATE FUNCTIONS (PIPELINES)
-// ============================================================================
-
 Future<Map<String, dynamic>> runNumberingPipeline(
-    Map<String, dynamic> args,) async {
+  Map<String, dynamic> args,
+) async {
   Uint8List modelBytes = args['modelBytes'];
   Uint8List imageBytes = args['imageBytes'];
 
@@ -58,7 +55,7 @@ Future<Map<String, dynamic>> runNumberingPipeline(
   if (preds.length == 8400) {
     var transposed = List.generate(
       preds[0].length,
-          (i) => List<double>.filled(preds.length, 0.0),
+      (i) => List<double>.filled(preds.length, 0.0),
     );
     for (int i = 0; i < preds.length; i++) {
       for (int j = 0; j < preds[0].length; j++) {
@@ -136,7 +133,8 @@ Future<Map<String, dynamic>> runNumberingPipeline(
 }
 
 Future<Map<String, dynamic>> runCariesPipeline(
-    Map<String, dynamic> args,) async {
+  Map<String, dynamic> args,
+) async {
   Uint8List modelBytes = args['modelBytes'];
   Uint8List imageBytes = args['imageBytes'];
 
@@ -229,10 +227,10 @@ List<DetectionResult> applyNMS(List<DetectionResult> allDetections) {
 double iou(Rect a, Rect b) {
   double intersectionWidth =
       (a.right < b.right ? a.right : b.right) -
-          (a.left > b.left ? a.left : b.left);
+      (a.left > b.left ? a.left : b.left);
   double intersectionHeight =
       (a.bottom < b.bottom ? a.bottom : b.bottom) -
-          (a.top > b.top ? a.top : b.top);
+      (a.top > b.top ? a.top : b.top);
   if (intersectionWidth <= 0 || intersectionHeight <= 0) return 0;
   double intersectionArea = intersectionWidth * intersectionHeight;
   double unionArea =
@@ -295,6 +293,10 @@ String getToothNumber(int id) {
     50: '75',
     51: '76',
     52: '81',
+    53: '82',
+    54: '83',
+    55: '84',
+    56: '85',
   };
   return map[id] ?? id.toString();
 }
@@ -314,10 +316,6 @@ Color getCariesColor(int id) {
   return map[id] ?? Colors.red;
 }
 
-// ============================================================================
-// CONTROLLER
-// ============================================================================
-
 class DeteksiController extends GetxController {
   final ImagePicker _picker = ImagePicker();
 
@@ -325,7 +323,7 @@ class DeteksiController extends GetxController {
   RxList<DetectionResult> detections = <DetectionResult>[].obs;
 
   RxBool isLoading = false.obs;
-  RxBool isSaving = false.obs; // Tambahan state untuk menyimpan
+  RxBool isSaving = false.obs;
 
   RxDouble imageWidth = 0.0.obs;
   RxDouble imageHeight = 0.0.obs;
@@ -413,11 +411,6 @@ class DeteksiController extends GetxController {
     }
   }
 
-  // ============================================================================
-  // LOGIKA PENYIMPANAN KE SUPABASE & FIRESTORE
-  // ============================================================================
-
-  /// Fungsi untuk menggabungkan gambar rontgen asli dengan hasil deteksi
   Future<Uint8List?> _generateMergedImage(DeteksiType type) async {
     if (selectedImage.value == null) return null;
 
@@ -435,14 +428,12 @@ class DeteksiController extends GetxController {
       for (var det in detections) {
         final paint = Paint()
           ..style = PaintingStyle.stroke
-          ..strokeWidth =
-          4.0
+          ..strokeWidth = 4.0
           ..color = det.color;
 
         final rect = det.box;
         canvas.drawRect(rect, paint);
 
-        // Siapkan Teks
         String labelText = type == DeteksiType.numbering
             ? det.className
             : "${det.className} ${det.score.toStringAsFixed(2)}";
@@ -454,9 +445,9 @@ class DeteksiController extends GetxController {
         );
 
         final paragraphBuilder =
-        ui.ParagraphBuilder(ui.ParagraphStyle(textAlign: TextAlign.left))
-          ..pushStyle(textStyle)
-          ..addText(labelText);
+            ui.ParagraphBuilder(ui.ParagraphStyle(textAlign: TextAlign.left))
+              ..pushStyle(textStyle)
+              ..addText(labelText);
 
         final paragraph = paragraphBuilder.build();
         paragraph.layout(const ui.ParagraphConstraints(width: 800));
@@ -467,8 +458,7 @@ class DeteksiController extends GetxController {
           paragraph.maxIntrinsicWidth + 20,
           paragraph.height + 10,
         );
-        canvas.drawRect(textBgRect, Paint()
-          ..color = det.color);
+        canvas.drawRect(textBgRect, Paint()..color = det.color);
 
         canvas.drawParagraph(
           paragraph,
@@ -503,17 +493,15 @@ class DeteksiController extends GetxController {
       if (mergedBytes == null) throw Exception("Gagal memproses gambar final");
 
       final String fileName =
-          'deteksi_${DateTime
-          .now()
-          .millisecondsSinceEpoch}.png';
+          'deteksi_${DateTime.now().millisecondsSinceEpoch}.png';
 
       await Supabase.instance.client.storage
           .from('panoramic-bucket')
           .uploadBinary(
-        fileName,
-        mergedBytes,
-        fileOptions: const FileOptions(contentType: 'image/png'),
-      );
+            fileName,
+            mergedBytes,
+            fileOptions: const FileOptions(contentType: 'image/png'),
+          );
 
       final String publicUrl = Supabase.instance.client.storage
           .from('panoramic-bucket')
@@ -524,7 +512,6 @@ class DeteksiController extends GetxController {
         throw Exception("Sesi login tidak ditemukan, mohon login ulang");
       }
 
-      // 5. Simpan data ke Firestore
       await FirebaseFirestore.instance.collection('histori_deteksi').add({
         'userId': currentUser.uid,
         'imageUrl': publicUrl,
