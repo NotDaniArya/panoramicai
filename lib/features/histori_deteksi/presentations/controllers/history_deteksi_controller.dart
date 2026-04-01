@@ -1,18 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:panoramicai/features/histori_deteksi/data/models/history_models.dart';
-
 import '../../../../utils/helper_functions/helper.dart';
 
 class HistoryDeteksiController extends GetxController {
-  final FirebaseFirestore db = FirebaseFirestore.instance;
   final RxList<HistoryModels> historyList = <HistoryModels>[].obs;
-
-  final User? currentUser = FirebaseAuth.instance.currentUser;
-
-  RxBool isLoading = false.obs;
+  final RxBool isLoading = false.obs;
 
   @override
   void onInit() {
@@ -21,31 +14,34 @@ class HistoryDeteksiController extends GetxController {
   }
 
   Future<void> fetchHistory() async {
-    if (currentUser == null) {
-      MyHelperFunction.errorToast('User belum login');
-      return;
-    }
-
     isLoading.value = true;
     historyList.clear();
 
     try {
-      final QuerySnapshot querySnapshot = await db
-          .collection('histori_deteksi')
-          .where('userId', isEqualTo: currentUser!.uid)
-          .orderBy('createdAt', descending: true)
-          .get();
+      // Dummy data replacement for Firebase
+      await Future.delayed(const Duration(seconds: 1));
+      
+      final dummyHistory = [
+        HistoryModels(
+          id: '1',
+          imageUrl: 'https://picsum.photos/200',
+          jumlahTerdeteksi: 3,
+          type: 'Karies',
+          createdAt: DateTime.now().subtract(const Duration(days: 1)),
+        ),
+        HistoryModels(
+          id: '2',
+          imageUrl: 'https://picsum.photos/201',
+          jumlahTerdeteksi: 12,
+          type: 'Numbering',
+          createdAt: DateTime.now().subtract(const Duration(days: 2)),
+        ),
+      ];
 
-      final List<QueryDocumentSnapshot<Object?>> history = querySnapshot.docs;
-
-      historyList.value = history.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-
-        return HistoryModels.fromMap(data, doc.id);
-      }).toList();
+      historyList.assignAll(dummyHistory);
     } catch (e) {
       debugPrint('Error fetching history: $e');
-      MyHelperFunction.errorToast('Terjadi kesalahan saat mengambil data: $e');
+      MyHelperFunction.errorToast('Terjadi kesalahan saat mengambil data dummy');
     } finally {
       isLoading.value = false;
     }
@@ -53,15 +49,12 @@ class HistoryDeteksiController extends GetxController {
 
   Future<void> deleteHistory(String historyId) async {
     try {
-      await db.collection('histori_deteksi').doc(historyId).delete();
-
+      // Mock delete
       historyList.removeWhere((history) => history.id == historyId);
-
-      fetchHistory();
-      MyHelperFunction.suksesToast('Riwayat berhasil dihapus');
+      MyHelperFunction.suksesToast('Riwayat berhasil dihapus (Dummy)');
     } catch (e) {
       debugPrint('Error deleting history: $e');
-      MyHelperFunction.errorToast('Terjadi kesalahan saat menghapus data: $e');
+      MyHelperFunction.errorToast('Terjadi kesalahan saat menghapus data');
     }
   }
 }

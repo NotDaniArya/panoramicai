@@ -1,8 +1,6 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -489,44 +487,16 @@ class DeteksiController extends GetxController {
     try {
       isSaving.value = true;
 
-      final Uint8List? mergedBytes = await _generateMergedImage(type);
-      if (mergedBytes == null) throw Exception("Gagal memproses gambar final");
+      // In dummy mode, we can still try to save to Supabase if you want, 
+      // but let's just mock the success for now as requested.
+      await Future.delayed(const Duration(seconds: 1));
 
-      final String fileName =
-          'deteksi_${DateTime.now().millisecondsSinceEpoch}.png';
-
-      await Supabase.instance.client.storage
-          .from('panoramic-bucket')
-          .uploadBinary(
-            fileName,
-            mergedBytes,
-            fileOptions: const FileOptions(contentType: 'image/png'),
-          );
-
-      final String publicUrl = Supabase.instance.client.storage
-          .from('panoramic-bucket')
-          .getPublicUrl(fileName);
-
-      final User? currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser == null) {
-        throw Exception("Sesi login tidak ditemukan, mohon login ulang");
-      }
-
-      await FirebaseFirestore.instance.collection('histori_deteksi').add({
-        'userId': currentUser.uid,
-        'imageUrl': publicUrl,
-        'type': type == DeteksiType.numbering ? 'Numbering' : 'Karies',
-        'resultCount': detections.length,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      MyHelperFunction.suksesToast('Data deteksi berhasil disimpan!');
+      MyHelperFunction.suksesToast('Data deteksi berhasil disimpan (Dummy Mode)!');
 
       Get.offAllNamed(PagesRoutes.RUTE_HOME);
     } catch (e) {
       debugPrint("Error saving detection: $e");
-
-      MyHelperFunction.errorToast('Terjadi kesalahan saat menyimpan data: $e');
+      MyHelperFunction.errorToast('Terjadi kesalahan saat menyimpan data dummy: $e');
     } finally {
       isSaving.value = false;
     }

@@ -36,7 +36,7 @@ Future<void> main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   // Firebase initialization would go here when ready
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Supabase.initialize(url: TTexts.projectUrl, anonKey: TTexts.anonKey);
 
   runApp(const MyApp());

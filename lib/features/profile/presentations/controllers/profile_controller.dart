@@ -1,20 +1,13 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:panoramicai/features/onboarding/onboarding_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 import '../../../../utils/helper_functions/helper.dart';
-import '../../../auth/presentations/screens/login/login_screen.dart';
 import '../../data/user_profile_model.dart';
 
 class UserProfileController extends GetxController {
-  final FirebaseFirestore db = FirebaseFirestore.instance;
-  final User? currentUser = FirebaseAuth.instance.currentUser;
-
+  // Mocking Firebase data
   final Rxn<UserProfileModel> userProfile = Rxn<UserProfileModel>();
 
   final RxBool isLoading = false.obs;
@@ -41,44 +34,38 @@ class UserProfileController extends GetxController {
   }
 
   Future<void> fetchUserProfile() async {
-    if (currentUser == null) {
-      MyHelperFunction.errorToast('User belum login');
-      return;
-    }
-
     isLoading.value = true;
 
     try {
-      DocumentSnapshot documentSnapshot = await db
-          .collection('users')
-          .doc(currentUser!.uid)
-          .get();
+      // Dummy data replacement for Firebase
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      final dummyProfile = UserProfileModel(
+        Uid: 'dummy_uid_123',
+        userName: 'User Dummy',
+        email: 'user@dummy.com',
+        photoUrl: 'https://i.pravatar.cc/150?u=dummy',
+        institusi: 'Universitas Dummy',
+        npa: '12345678',
+        tanggalLahir: '01-01-1990',
+      );
 
-      if (documentSnapshot.exists) {
-        final data = documentSnapshot.data() as Map<String, dynamic>;
-        final profile = UserProfileModel.fromMap(data);
-        userProfile.value = profile;
+      userProfile.value = dummyProfile;
 
-        // Inisialisasi controller dengan data dari Firestore
-        fullNameController.text = profile.userName;
-        institusiController.text = profile.institusi ?? '';
-        npaController.text = profile.npa ?? '';
-        tanggalLahirController.text = profile.tanggalLahir ?? '';
+      fullNameController.text = dummyProfile.userName;
+      institusiController.text = dummyProfile.institusi ?? '';
+      npaController.text = dummyProfile.npa ?? '';
+      tanggalLahirController.text = dummyProfile.tanggalLahir ?? '';
 
-      } else {
-        userProfile.value = null;
-        MyHelperFunction.errorToast('Data pengguna tidak ditemukan');
-      }
     } catch (e) {
       debugPrint('Error fetching user profile: $e');
-      MyHelperFunction.errorToast('Terjadi kesalahan saat mengambil data: $e');
+      MyHelperFunction.errorToast('Terjadi kesalahan saat mengambil data dummy');
     } finally {
       isLoading.value = false;
     }
   }
 
   Future<void> updateUserProfile() async {
-    if (currentUser == null) return;
     if (!formKey.currentState!.validate()) return;
 
     isUpdating.value = true;
@@ -86,54 +73,58 @@ class UserProfileController extends GetxController {
       String photoUrl = userProfile.value?.photoUrl ?? '';
 
       if (selectedImage.value != null) {
-        final String fileName =
-            'profile_${currentUser!.uid}_${DateTime.now().millisecondsSinceEpoch}.png';
+        // Still keeping Supabase for storage if it's not banned, 
+        // but adding a fallback for safety if the user wants everything local.
+        try {
+          final String fileName =
+              'profile_dummy_${DateTime.now().millisecondsSinceEpoch}.png';
 
-        await Supabase.instance.client.storage
-            .from('panoramic-bucket')
-            .uploadBinary(
-              fileName,
-              await selectedImage.value!.readAsBytes(),
-              fileOptions: const FileOptions(contentType: 'image/png'),
-            );
+          await Supabase.instance.client.storage
+              .from('panoramic-bucket')
+              .uploadBinary(
+                fileName,
+                await selectedImage.value!.readAsBytes(),
+                fileOptions: const FileOptions(contentType: 'image/png'),
+              );
 
-        photoUrl = Supabase.instance.client.storage
-            .from('panoramic-bucket')
-            .getPublicUrl(fileName);
+          photoUrl = Supabase.instance.client.storage
+              .from('panoramic-bucket')
+              .getPublicUrl(fileName);
+        } catch (e) {
+          debugPrint('Supabase storage error (optional): $e');
+        }
       }
 
-      final updatedData = {
-        'userName': fullNameController.text.trim(),
-        'tanggalLahir': tanggalLahirController.text.trim(),
-        'institusi': institusiController.text.trim(),
-        'npa': npaController.text.trim(),
-        'photoUrl': photoUrl,
-      };
+      final updatedProfile = UserProfileModel(
+        Uid: userProfile.value?.Uid ?? 'dummy_uid_123',
+        userName: fullNameController.text.trim(),
+        email: userProfile.value?.email ?? 'user@dummy.com',
+        photoUrl: photoUrl,
+        tanggalLahir: tanggalLahirController.text.trim(),
+        institusi: institusiController.text.trim(),
+        npa: npaController.text.trim(),
+      );
 
-      await db.collection('users').doc(currentUser!.uid).update(updatedData);
-
-      await fetchUserProfile();
-
+      userProfile.value = updatedProfile;
       selectedImage.value = null;
-
       isUpdating.value = false;
 
       Get.back();
-      MyHelperFunction.suksesToast('Profil berhasil diperbarui'); //
+      MyHelperFunction.suksesToast('Profil berhasil diperbarui (Local Dummy)'); 
     } catch (e) {
       debugPrint('Error updating profile: $e');
       MyHelperFunction.errorToast('Gagal memperbarui profil: $e');
+    } finally {
+      isUpdating.value = false;
     }
   }
 
   Future<void> logout() async {
     try {
-      await FirebaseAuth.instance.signOut();
-      await GoogleSignIn().signOut();
-      Get.offAll(() => const OnboardingScreen());
+      // Mock logout
+      Get.offAllNamed('/onboarding'); // Adjusted to use named route if possible
     } catch (e) {
       debugPrint('Error logging out: $e');
-      MyHelperFunction.errorToast('Terjadi kesalahan saat logout: $e');
     }
   }
 }

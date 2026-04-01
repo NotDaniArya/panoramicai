@@ -24,13 +24,15 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkUserSession() async {
     await Future.delayed(const Duration(seconds: 3));
 
-    final User? currentUser = FirebaseAuth.instance.currentUser;
+    // final User? currentUser = FirebaseAuth.instance.currentUser;
+    //
+    // if (currentUser != null) {
+    //   Get.offAll(() => const NavigationMenu());
+    // } else {
+    //   Get.offAll(() => const OnboardingScreen());
+    // }
 
-    if (currentUser != null) {
-      Get.offAll(() => const NavigationMenu());
-    } else {
-      Get.offAll(() => const OnboardingScreen());
-    }
+    Get.offAll(() => const NavigationMenu());
   }
 
   @override

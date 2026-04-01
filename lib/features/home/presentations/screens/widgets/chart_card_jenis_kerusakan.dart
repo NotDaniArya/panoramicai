@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:panoramicai/utils/constant/colors.dart';
@@ -9,134 +7,104 @@ class ChartCardJenisKerusakan extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    // Mocking data instead of StreamBuilder with Firebase
+    const int kariesCount = 10;
+    const int numberingCount = 5;
+    const int totalCount = kariesCount + numberingCount;
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('histori_deteksi')
-          .where('userId', isEqualTo: userId)
-          .snapshots(),
-      builder: (context, snapshot) {
-        int kariesCount = 0;
-        int numberingCount = 0;
+    return SizedBox(
+      height: 240, 
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        color: const Color(0xFFE3F2FD),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            children: [
+              const Text(
+                'Jenis Deteksi Anda',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
 
-        if (snapshot.hasData) {
-          for (var doc in snapshot.data!.docs) {
-            final data = doc.data() as Map<String, dynamic>;
-            final type = data['type'] as String?;
-            if (type == 'Karies') {
-              kariesCount++;
-            } else if (type == 'Numbering') {
-              numberingCount++;
-            }
-          }
-        }
-
-        final totalCount = kariesCount + numberingCount;
-
-        return SizedBox(
-          height: 240, // Tinggi disamakan dengan kartu sebelahnya
-          child: Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            // Sedikit dikurangi agar lebih proporsional
-            color: const Color(0xFFE3F2FD),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0), // Padding dikurangi sedikit
-              child: Column(
-                // UBAH KE COLUMN
-                children: [
-                  const Text(
-                    'Jenis Deteksi Anda',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Chart Section (di atas)
-                  Expanded(
-                    flex: 3,
-                    child: Stack(
-                      alignment: Alignment.center,
+              Expanded(
+                flex: 3,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '$totalCount',
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: TColors.primaryColor,
-                              ),
-                            ),
-                            const Text(
-                              'Total',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
+                        const Text(
+                          '$totalCount',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: TColors.primaryColor,
+                          ),
                         ),
-                        PieChart(
-                          PieChartData(
-                            centerSpaceRadius: 35, // Diperkecil lagi agar fit
-                            sectionsSpace: 2,
-                            startDegreeOffset: 270,
-                            sections: [
-                              PieChartSectionData(
-                                color: const Color(0xFFFF1493),
-                                value: kariesCount == 0 && numberingCount == 0
-                                    ? 1
-                                    : kariesCount.toDouble(),
-                                radius: 12,
-                                showTitle: false,
-                              ),
-                              PieChartSectionData(
-                                color: const Color(0xFFFFA500),
-                                value: kariesCount == 0 && numberingCount == 0
-                                    ? 0
-                                    : numberingCount.toDouble(),
-                                radius: 12,
-                                showTitle: false,
-                              ),
-                            ],
+                        const Text(
+                          'Total',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey,
                           ),
                         ),
                       ],
                     ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Legend Section (di bawah)
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildLegendItem(
-                          const Color(0xFFFFA500),
-                          'Karies',
-                          kariesCount,
-                        ),
-                        const SizedBox(height: 6),
-                        _buildLegendItem(
-                          const Color(0xFFFF1493),
-                          'Numbering',
-                          numberingCount,
-                        ),
-                      ],
+                    PieChart(
+                      PieChartData(
+                        centerSpaceRadius: 35,
+                        sectionsSpace: 2,
+                        startDegreeOffset: 270,
+                        sections: [
+                          PieChartSectionData(
+                            color: const Color(0xFFFF1493),
+                            value: kariesCount.toDouble(),
+                            radius: 12,
+                            showTitle: false,
+                          ),
+                          PieChartSectionData(
+                            color: const Color(0xFFFFA500),
+                            value: numberingCount.toDouble(),
+                            radius: 12,
+                            showTitle: false,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+
+              const SizedBox(height: 12),
+
+              Expanded(
+                flex: 2,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildLegendItem(
+                      const Color(0xFFFFA500),
+                      'Karies',
+                      kariesCount,
+                    ),
+                    const SizedBox(height: 6),
+                    _buildLegendItem(
+                      const Color(0xFFFF1493),
+                      'Numbering',
+                      numberingCount,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
