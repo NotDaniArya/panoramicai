@@ -9,6 +9,7 @@
 .buildlog/
 .history
 .env
+*.env
 .svn/
 .swiftpm/
 migrate_working_dir/
@@ -48,3 +49,6 @@ app.*.map.json
 # models ML
 assets/models/model_caries_segmentation.tflite
 assets/models/model_numbering_detection.tflite
+
+android/app/google-services.json
+*android/app/google-services.json
