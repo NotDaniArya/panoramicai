@@ -1,57 +1,34 @@
 {
   "project_info": {
-    "project_number": "290012682072",
-    "project_id": "panoramic-ai",
-    "storage_bucket": "panoramic-ai.firebasestorage.app"
+    "project_number": "287894520755",
+    "project_id": "panoramic-ai-db8d3",
+    "storage_bucket": "panoramic-ai-db8d3.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:290012682072:android:50a3d1fae5a14ec404f72d",
+        "mobilesdk_app_id": "1:287894520755:android:3fb2a4641c4b3efa18c1c6",
         "android_client_info": {
           "package_name": "com.ardev.panoramicai"
         }
       },
       "oauth_client": [
         {
-          "client_id": "290012682072-9d517drh1jrf0l5fv1kntasr78d85del.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.ardev.panoramicai",
-            "certificate_hash": "7c04126065eab03fbed515d2692b5cf0f7391735"
-          }
-        },
-        {
-          "client_id": "290012682072-q94q3blbbl7jkdsmr80gmsolesa9ikem.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.ardev.panoramicai",
-            "certificate_hash": "cee3e4e8bb75f5653b4503e06d0a6e242ea66133"
-          }
-        },
-        {
-          "client_id": "290012682072-775jf51va80pq0tt80i237a9bn87osv6.apps.googleusercontent.com",
+          "client_id": "287894520755-fmd4pmfrpqcdq49hql0dcq1i5t8of3fa.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAQM8UmYWIMCd4gknoCICoUOUaFQexuWoc"
+          "current_key": "AIzaSyAgHZcbSKu7J3fw94saiwuw4MNG0yVXxVY"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "290012682072-775jf51va80pq0tt80i237a9bn87osv6.apps.googleusercontent.com",
+              "client_id": "287894520755-fmd4pmfrpqcdq49hql0dcq1i5t8of3fa.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "290012682072-nr2uf2tj5j7itqrno680sqtsavvl3shr.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.ardev.panoramicai"
-              }
             }
           ]
         }

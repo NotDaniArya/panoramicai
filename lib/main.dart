@@ -8,8 +8,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:panoramicai/features/deteksi/bindings/deteksi_binding.dart';
 import 'package:panoramicai/features/deteksi/core/deteksi_type.dart';
 import 'package:panoramicai/features/deteksi/presentations/screens/deteksi_screen.dart';
-import 'package:panoramicai/features/deteksi/presentations/screens/pilih_deteksi_screen.dart';
-import 'package:panoramicai/features/onboarding/onboarding_screen.dart';
 import 'package:panoramicai/features/profile/presentations/screens/profile_screen.dart';
 import 'package:panoramicai/navigation_menu.dart';
 import 'package:panoramicai/splash_screen.dart';
@@ -19,7 +17,6 @@ import 'package:panoramicai/utils/constant/texts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'features/profile/bindings/user_profile_binding.dart';
-import 'firebase_options.dart';
 
 final theme = ThemeData().copyWith(
   colorScheme: ColorScheme.fromSeed(
@@ -36,7 +33,7 @@ Future<void> main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   // Firebase initialization would go here when ready
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp();
   await Supabase.initialize(url: TTexts.projectUrl, anonKey: TTexts.anonKey);
 
   runApp(const MyApp());
