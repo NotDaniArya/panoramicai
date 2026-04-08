@@ -22,7 +22,7 @@ class HistoryDeteksiScreen extends GetView<HistoryDeteksiController> {
       backgroundColor: TColors.backgroundColor,
       appBar: AppBar(
         title: Text(
-          'Riwayat Deteksi',
+          'Detection History',
           style: textTheme.headlineSmall!.copyWith(
             fontWeight: FontWeight.bold,
             color: TColors.primaryColor,
@@ -49,7 +49,7 @@ class HistoryDeteksiScreen extends GetView<HistoryDeteksiController> {
                 Icon(Icons.history_outlined, size: 80, color: Colors.grey[400]),
                 const SizedBox(height: 20),
                 Text(
-                  'Belum Ada Riwayat',
+                  'No history yet',
                   style: textTheme.titleLarge!.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.grey[600],
@@ -57,7 +57,7 @@ class HistoryDeteksiScreen extends GetView<HistoryDeteksiController> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Anda belum memiliki riwayat rekam medis. Silakan lakukan deteksi gigi Anda sekarang.',
+                  'You don’t have a medical history on file yet. Please have your teeth examined now.',
                   textAlign: TextAlign.center,
                   style: textTheme.bodyMedium!.copyWith(color: Colors.grey),
                 ),
@@ -145,7 +145,7 @@ class HistoryDeteksiScreen extends GetView<HistoryDeteksiController> {
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: Text(
-                                    isCaries ? 'Karies Gigi' : 'Numbering Gigi',
+                                    isCaries ? 'Tooth Decay' : 'Tooth Numbering',
                                     style: textTheme.labelSmall!.copyWith(
                                       color: isCaries ? Colors.red : Colors.blue,
                                       fontWeight: FontWeight.bold,
@@ -155,8 +155,8 @@ class HistoryDeteksiScreen extends GetView<HistoryDeteksiController> {
                                 const SizedBox(height: 8),
                                 Text(
                                   isCaries
-                                      ? 'Terdeteksi ${history.jumlahTerdeteksi} Karies'
-                                      : 'Terdeteksi ${history.jumlahTerdeteksi} Gigi',
+                                      ? '${history.jumlahTerdeteksi} Cavities Detected'
+                                      : '${history.jumlahTerdeteksi} Teeth Detected',
                                   style: textTheme.titleMedium!.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),

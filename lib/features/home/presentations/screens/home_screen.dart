@@ -81,7 +81,7 @@ class HomeScreen extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: Text(
-                      'Analisis Deteksi',
+                      'Detection Analysis',
                       style: textTheme.bodyLarge!.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -99,7 +99,7 @@ class HomeScreen extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: Text(
-                      'Jenis Kerusakan',
+                      'Types of Tooth Damage',
                       style: textTheme.bodyLarge!.copyWith(
                         fontWeight: FontWeight.bold,
                       ),

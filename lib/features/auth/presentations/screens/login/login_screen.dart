@@ -80,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (value == null ||
                               value.isEmpty ||
                               !value.contains('@')) {
-                            return 'Email tidak valid';
+                            return 'Email is invalid';
                           }
 
                           return null;
@@ -122,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (value == null ||
                               value.isEmpty ||
                               value.trim().length <= 8) {
-                            return 'Panjang input minimal 8 karakter';
+                            return 'The minimum input length is 8 characters';
                           }
 
                           return null;

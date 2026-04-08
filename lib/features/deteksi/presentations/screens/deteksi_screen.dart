@@ -36,7 +36,7 @@ class DeteksiScreen extends GetView<DeteksiController> {
         appBar: AppBar(
           centerTitle: true,
           title: Text(
-            type == DeteksiType.numbering ? "Numbering Gigi" : "Karies Gigi",
+            type == DeteksiType.numbering ? "Tooth Numbering" : "Tooth Decay",
             style: textTheme.headlineSmall!.copyWith(
               fontWeight: FontWeight.bold,
               color: TColors.primaryColor,
@@ -81,7 +81,7 @@ class DeteksiScreen extends GetView<DeteksiController> {
                   else
                     Obx(() {
                       if (controller.selectedImage.value == null) {
-                        return const Text("Tidak ada gambar yang dipilih");
+                        return const Text("No image selected");
                       }
 
                       if (controller.isLoading.value ||
@@ -145,7 +145,7 @@ class DeteksiScreen extends GetView<DeteksiController> {
                               ),
                               child: Center(
                                 child: Text(
-                                  'Gambar yang di upload tidak valid. Silahkan masukkan gambar yang valid!',
+                                  'The uploaded image is invalid. Please upload a valid image!',
                                   style: textTheme.titleMedium!.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -195,7 +195,7 @@ class DeteksiScreen extends GetView<DeteksiController> {
                                     ),
                                   )
                                 : Text(
-                                    'Simpan',
+                                    'Save',
                                     style: textTheme.titleMedium!.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,

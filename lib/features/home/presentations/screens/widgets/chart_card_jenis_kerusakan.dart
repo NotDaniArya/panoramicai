@@ -49,7 +49,7 @@ class ChartCardJenisKerusakan extends StatelessWidget {
                 // UBAH KE COLUMN
                 children: [
                   const Text(
-                    'Jenis Deteksi Anda',
+                    'Your Detection Type',
                     style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
@@ -119,13 +119,13 @@ class ChartCardJenisKerusakan extends StatelessWidget {
                       children: [
                         _buildLegendItem(
                           const Color(0xFFFFA500),
-                          'Karies',
+                          'Dental Caries',
                           kariesCount,
                         ),
                         const SizedBox(height: 6),
                         _buildLegendItem(
                           const Color(0xFFFF1493),
-                          'Numbering',
+                          'Tooth Numbering',
                           numberingCount,
                         ),
                       ],

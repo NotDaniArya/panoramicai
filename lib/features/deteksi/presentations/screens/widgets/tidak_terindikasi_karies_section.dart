@@ -38,7 +38,7 @@ class TidakTerindikasiKariesSection extends StatelessWidget {
           ),
           child: Center(
             child: Text(
-              'Tidak Terindikasi Karies',
+              'No Caries Indication',
               style: textTheme.titleMedium!.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,

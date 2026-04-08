@@ -19,14 +19,14 @@ class LoadingDetection extends StatelessWidget {
             const CircularProgressIndicator(color: TColors.primaryColor),
             const SizedBox(height: 16),
             Text(
-              "Sedang Menganalisis Gambar...",
+              "Analyzing Images...",
               style: textTheme.bodyMedium!.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
             const Text(
-              "Mohon jangan keluar dari halaman ini",
+              "Please do not leave this page",
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],

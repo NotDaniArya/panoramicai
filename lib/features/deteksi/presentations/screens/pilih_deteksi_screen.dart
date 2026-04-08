@@ -28,7 +28,7 @@ class PilihDeteksiScreen extends StatelessWidget {
                         children: [
                           const SizedBox(height: 24),
                           Text(
-                            "Pilih Jenis\nDeteksi Gigi",
+                            "Select Type\nTooth Detection",
                             style: Theme.of(context).textTheme.headlineLarge
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
@@ -37,7 +37,7 @@ class PilihDeteksiScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            "Pilih salah satu jenis deteksi di bawah ini untuk memulai proses analisis rontgen gigi Anda.",
+                            "Select one of the types of detection below to begin the analysis of your dental X-rays.",
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           const Spacer(),
@@ -45,7 +45,7 @@ class PilihDeteksiScreen extends StatelessWidget {
                             context,
                             title: "Tooth Numbering",
                             subtitle:
-                                "Identifikasi posisi dan nomor gigi permanen serta sulung.",
+                                "Identify the positions and numbers of the permanent and deciduous teeth.",
                             icon: Icons.format_list_numbered,
                             type: DeteksiType.numbering,
                           ),
@@ -54,7 +54,7 @@ class PilihDeteksiScreen extends StatelessWidget {
                             context,
                             title: "Caries Detection",
                             subtitle:
-                                "Deteksi dini karies gigi (Dentin, Email, Pulpa, Sisa Akar).",
+                                "Early detection of dental caries (dentin, enamel, pulp, root remnants).",
                             icon: Icons.biotech,
                             type: DeteksiType.caries,
                           ),

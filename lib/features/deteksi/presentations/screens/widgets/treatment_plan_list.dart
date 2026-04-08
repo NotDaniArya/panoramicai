@@ -10,23 +10,23 @@ class TreatmentPlanList extends StatelessWidget {
         _TreatmentPlanItem(
           title: '1. RA (Initial Stage)',
           description:
-          'Lesi terbatas pada enamel hingga outer dentin dan biasanya non-cavitated.',
+          'Lesions are limited to the enamel to outer dentin and are usually non-cavitated.',
           treatment:
-          'Perawatan difokuskan pada tindakan preventif dan remineralisasi, seperti aplikasi fluoride, fissure sealant, peningkatan kebersihan mulut, serta edukasi diet rendah gula.',
+          'Treatment focuses on preventive and remineralization measures, such as fluoride application, fissure sealants, improved oral hygiene, and low-sugar diet education.',
           color: Colors.green,
         ),
         _TreatmentPlanItem(
           title: '2. RB (Moderate Stage)',
           description:
-          'Lesi mencapai middle dentin dan dapat cavitated atau non-cavitated.',
+          'The lesion reaches the middle dentin and can be cavitated or non-cavitated.',
           treatment:
-          'Perawatan dapat berupa non-operatif (sealant, resin infiltration, kontrol plak dan fluoride) jika belum berkavitas, atau restorasi minimal invasif jika telah terjadi kavitas.',
+          'Treatment can be non-operative (sealant, resin infiltration, plaque control and fluoride) if there is no cavity, or minimally invasive restoration if a cavity has occurred.',
           color: Colors.orange,
         ),
         _TreatmentPlanItem(
           title: '3. RC (Extensive Stage)',
           description:
-          'Lesi mencapai inner dentin hingga mendekati pulpa dan umumnya sudah cavitated.',
+          'The lesion reaches the inner dentin to near the pulp and is generally cavitated.',
           treatment:
           'Perawatan meliputi restorasi definitif, dan bila pulpa terlibat dapat dilakukan terapi pulpa seperti pulpotomi atau perawatan saluran akar sesuai kondisi klinis.',
           color: Colors.red,

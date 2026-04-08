@@ -89,7 +89,7 @@ class _InformationSlider extends State<InformationSlider> {
                       ),
                     ),
                     child: Text(
-                      'Karies Gigi',
+                      'Dental Caries',
                       textAlign: TextAlign.center,
                       style: textTheme.titleMedium!.copyWith(
                         color: Colors.white,

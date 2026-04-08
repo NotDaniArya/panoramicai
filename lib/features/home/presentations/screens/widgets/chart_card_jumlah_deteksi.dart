@@ -83,7 +83,7 @@ class ChartCardJumlahDeteksi extends StatelessWidget {
 
                   const SizedBox(height: 12),
                   const Text(
-                    'Orang Mendeteksi', // Label disesuaikan agar lebih logis
+                    'Number of People Detecting', // Label disesuaikan agar lebih logis
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,

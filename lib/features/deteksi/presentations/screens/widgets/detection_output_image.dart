@@ -85,7 +85,7 @@ class DetectionOutputImage extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Text("Lihat Gambar", style: textTheme.labelMedium),
+                  Text("Zoom Image", style: textTheme.labelMedium),
                   const SizedBox(width: 4),
                   const Icon(Icons.open_in_full, size: 14),
                 ],

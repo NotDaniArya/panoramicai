@@ -66,7 +66,7 @@ class OnboardingScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: TSizes.smallSpace),
                 Text(
-                  'Belum punya akun?',
+                  'Don\'t have an account yet?',
                   style: textTheme.bodyMedium!.copyWith(
                     color: TColors.secondaryText,
                   ),

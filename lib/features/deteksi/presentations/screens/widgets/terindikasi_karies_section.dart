@@ -33,7 +33,7 @@ class TerindikasiKariesSection extends StatelessWidget {
           ),
           child: Center(
             child: Text(
-              'Terindikasi Karies',
+              'Indicated Caries',
               style: textTheme.titleMedium!.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -45,7 +45,7 @@ class TerindikasiKariesSection extends StatelessWidget {
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            'Detail Deskripsi',
+            'Detailed Description',
             style: textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
@@ -54,7 +54,7 @@ class TerindikasiKariesSection extends StatelessWidget {
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            'Rencana Perawatan',
+            'Treatment Plan',
             style: textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
@@ -64,7 +64,7 @@ class TerindikasiKariesSection extends StatelessWidget {
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            'Referensi Klinis',
+            'Clinical Reference',
             style: textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
@@ -93,7 +93,7 @@ class TerindikasiKariesSection extends StatelessWidget {
                   const SizedBox(width: TSizes.smallSpace),
                   Expanded(
                     child: Text(
-                      'Rumah Sakit Universitas Hasanuddin',
+                      'RSGMP UNIVERSITAS HASANUDDIN',
                       style: textTheme.titleMedium!.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -103,7 +103,7 @@ class TerindikasiKariesSection extends StatelessWidget {
               ),
               const SizedBox(height: TSizes.smallSpace),
               Text(
-                'Jl. Perintis Kemerdekaan No.Km. 10, Tamalanrea, Kec. Tamalanrea, Kota Makassar, Sulawesi Selatan 90245',
+                'Jl. Kandea No.5, Baraya, Kec. Bontoala, Kota Makassar, Sulawesi Selatan',
                 style: textTheme.bodyMedium,
               ),
             ],

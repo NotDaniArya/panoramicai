@@ -16,11 +16,11 @@ class ProfileScreen extends GetView<UserProfileController> {
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          title: const Text('Konfirmasi Logout'),
-          content: const Text('Apakah Anda yakin ingin keluar dari akun Anda?'),
+          title: const Text('Confirm Logout'),
+          content: const Text('Are you sure you want to log out of your account?'),
           actions: <Widget>[
             TextButton(
-              child: const Text('Batal'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(ctx).pop(); // Tutup dialog
               },
@@ -44,7 +44,7 @@ class ProfileScreen extends GetView<UserProfileController> {
       backgroundColor: TColors.backgroundColor,
       appBar: AppBar(
         title: Text(
-          'Profil',
+          'Profile',
           style: textTheme.headlineSmall!.copyWith(
             fontWeight: FontWeight.bold,
             color: TColors.primaryColor,
@@ -106,7 +106,7 @@ class ProfileScreen extends GetView<UserProfileController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Informasi Pribadi',
+                      'Personal Information',
                       style: textTheme.titleMedium!.copyWith(
                         fontWeight: FontWeight.bold,
                         color: TColors.primaryColor,
@@ -118,7 +118,7 @@ class ProfileScreen extends GetView<UserProfileController> {
                     _buildInfoCard(
                       context,
                       icon: Icons.cake_outlined,
-                      label: 'Tanggal Lahir',
+                      label: 'Date of Birth',
                       value: user.tanggalLahir?.isNotEmpty == true
                           ? user.tanggalLahir!
                           : '-',
@@ -127,7 +127,7 @@ class ProfileScreen extends GetView<UserProfileController> {
                     _buildInfoCard(
                       context,
                       icon: Icons.business_outlined,
-                      label: 'Institusi',
+                      label: 'Institution',
                       value: user.institusi?.isNotEmpty == true
                           ? user.institusi!
                           : '-',
@@ -142,7 +142,7 @@ class ProfileScreen extends GetView<UserProfileController> {
 
                     const SizedBox(height: 32),
                     Text(
-                      'Pengaturan',
+                      'Settings',
                       style: textTheme.titleMedium!.copyWith(
                         fontWeight: FontWeight.bold,
                         color: TColors.primaryColor,
@@ -163,7 +163,7 @@ class ProfileScreen extends GetView<UserProfileController> {
                       ),
                       child: MenuItem(
                         icon: Icons.edit_outlined,
-                        title: 'Edit Profil',
+                        title: 'Edit Profile',
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
@@ -194,7 +194,7 @@ class ProfileScreen extends GetView<UserProfileController> {
                                 ),
                               ),
                               child: const Text(
-                                'Keluar Akun',
+                                'Sign Out',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,

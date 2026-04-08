@@ -29,7 +29,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (picked != null) {
       controller.tanggalLahirController.text = DateFormat(
         'dd MMMM yyyy',
-        'id_ID',
+        'en_US',
       ).format(picked);
     }
   }
@@ -42,7 +42,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          'Edit Profil',
+          'Edit Profile',
           style: textTheme.headlineSmall!.copyWith(
             fontWeight: FontWeight.bold,
             color: TColors.primaryColor,
@@ -81,7 +81,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                   TInputTextField(
                     controller: controller.fullNameController,
-                    labelText: 'Nama Lengkap',
+                    labelText: 'Full name',
                     icon: Icons.person_outline,
                     inputType: TextInputType.name,
                   ),
@@ -92,7 +92,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     child: AbsorbPointer(
                       child: TInputTextField(
                         controller: controller.tanggalLahirController,
-                        labelText: 'Tanggal Lahir',
+                        labelText: 'Date of birth',
                         icon: Icons.cake_outlined,
                         inputType: TextInputType.datetime,
                       ),
@@ -102,7 +102,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                   TInputTextField(
                     controller: controller.institusiController,
-                    labelText: 'Institusi',
+                    labelText: 'Institution',
                     maxLength: 50,
                     icon: Icons.business_outlined,
                     inputType: TextInputType.text,
@@ -111,7 +111,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                   TInputTextField(
                     controller: controller.npaController,
-                    labelText: 'NPA (Nomor Pokok Anggota PDGI)',
+                    labelText: 'NPA (PDGI Membership Identification Number)',
                     minLength: 4,
                     icon: Icons.badge_outlined,
                     inputType: TextInputType.number,
@@ -133,7 +133,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                             )
                           : Text(
-                              'Simpan Perubahan',
+                              'Save Changes',
                               style: textTheme.titleMedium!.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),

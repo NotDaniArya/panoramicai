@@ -90,11 +90,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Email tidak boleh kosong';
+                          return 'The email field cannot be left blank';
                         }
 
                         if (!GetUtils.isEmail(value.trim())) {
-                          return 'Format email tidak valid!';
+                          return 'Invalid email format!';
                         }
 
                         return null;
@@ -136,7 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         if (value == null ||
                             value.isEmpty ||
                             value.trim().length < 8) {
-                          return 'Panjang input minimal 8 karakter';
+                          return 'The minimum input length is 8 characters';
                         }
                         return null;
                       },

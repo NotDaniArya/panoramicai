@@ -16,18 +16,18 @@ class DeskripsiNumberingSection extends StatelessWidget {
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            'Detail Deskripsi',
+            'Detailed Description',
             style: textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(height: TSizes.spaceBtwItems,),
         _Description(
-          title: 'Gigi Permanen',
+          title: 'Permanent Teeth',
           description: TTexts.descGigiPermanent,
           color: const Color(0xFFFF1493),
         ),
         _Description(
-          title: 'Gigi Sulung',
+          title: 'Primary Teeth',
           description: TTexts.descGigiSulung,
           color: const Color(0xFFFFA500),
         ),
