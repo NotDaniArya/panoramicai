@@ -21,7 +21,7 @@ class TreatmentPlanList extends StatelessWidget {
           'The lesion reaches the middle dentin and can be cavitated or non-cavitated.',
           treatment:
           'Treatment can be non-operative (sealant, resin infiltration, plaque control and fluoride) if there is no cavity, or minimally invasive restoration if a cavity has occurred.',
-          color: Colors.orange,
+          color: Color(0xFF000080),
         ),
         _TreatmentPlanItem(
           title: '3. RC (Extensive Stage)',
