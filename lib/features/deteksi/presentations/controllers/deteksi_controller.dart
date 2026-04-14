@@ -302,7 +302,7 @@ String getToothNumber(int id) {
 }
 
 String getCariesClassName(int id) {
-  const map = {0: "Dentin", 1: "Email", 2: "Pulpa", 3: "Sisa Akar"};
+  const map = {0: "Dentin", 1: "Email", 2: "Pulpa", 3: "Radix"};
   return map[id] ?? "Unknown";
 }
 
